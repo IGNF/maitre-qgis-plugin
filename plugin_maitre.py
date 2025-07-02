@@ -653,7 +653,7 @@ class PluginMaitre:
             self.setpluginmenu()
 
             # show the dialog
-            self.dlg.setWindowTitle("Plugin maitre")
+            self.dlg.setWindowTitle("Plugin maitre v1.0.0")
             self.dlg.setWindowFlags(Qt.WindowStaysOnTopHint)
 
 

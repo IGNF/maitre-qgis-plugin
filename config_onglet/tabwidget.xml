@@ -2,10 +2,8 @@
 <tabwidget>
     <onglet id="menu IGN">
         <plugin>(IGN)assistant_odonyme</plugin>
-        <plugin>(IGN)squelette</plugin>
     </onglet>
     <onglet id="routier">
-        <plugin>(IGN)altibonne</plugin>
         <plugin>(IGN)assisstant_dfci</plugin>
         <plugin>(IGN)assistant_complexe</plugin>
         <plugin>(IGN)assistant_hydro</plugin>
@@ -13,6 +11,5 @@
         <plugin>(IGN)assistant_route</plugin>
         <plugin>(IGN)chemin_plus_court</plugin>
         <plugin>(IGN)plugin_vue</plugin>
-        <plugin>(IGN)squelette</plugin>
     </onglet>
 </tabwidget>
