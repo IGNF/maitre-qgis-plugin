@@ -104,7 +104,8 @@ class PluginMaitre:
 
         # ************************************************************************
         # plugin maitre
-        action = QAction(QIcon(os.path.dirname(__file__) + "/icons/icon.png"),
+        icon_path = os.path.join(os.path.dirname(__file__), "icons", "icon.png")
+        action = QAction(QIcon(icon_path),
                          PLUGIN_MAITRE,
                          self.iface.mainWindow())
         action.triggered.connect(self.run)
@@ -113,11 +114,10 @@ class PluginMaitre:
 
         # ************************************************************************
         # documentation bduni
-        action = QAction(QIcon(os.path.dirname(__file__) + "/icons/spec.png"),
-                                         "Documentation BDTopo",
-                                         self.iface.mainWindow())
+        icon_path = os.path.join(os.path.dirname(__file__), "icons", "spec.png")
+        action = QAction(QIcon(icon_path) ,"Documentation BDTopo",self.iface.mainWindow())
+
         action.triggered.connect(affiches_spec_bdtopo)
-        action.triggered.connect(self.runplugin1)
 
         self.menu.addAction(action)
         self.menu.addSeparator()
@@ -127,8 +127,7 @@ class PluginMaitre:
         # autre plugin
         for plugincoche in self.get_plugin_coche_fromXML("menu IGN"):
             if plugincoche in self.plugin_ign:
-                rep_icon = parent_directory + "/" + plugincoche + "/icons/"
-                icon_path = rep_icon + "icon_principal.png"
+                icon_path = os.path.join(parent_directory,plugincoche,"icons","icon_principal.png")
 
                 action = QAction(QIcon(icon_path),
                                  plugincoche,
@@ -160,12 +159,9 @@ class PluginMaitre:
                 self.toolbar.addAction(action_text)
 
                 for plugincoche in self.get_plugin_coche_fromXML(onglet):
-                    rep_icon = parent_directory + "/" + plugincoche + "/icons/"
-                    icon_path = rep_icon + "icon_principal.png"
+                    icon_path = os.path.join(parent_directory, plugincoche, "icons", "icon_principal.png")
 
-                    action = QAction(QIcon(icon_path),
-                                                       plugincoche,
-                                                       self.iface.mainWindow())
+                    action = QAction(QIcon(icon_path),plugincoche,self.iface.mainWindow())
 
                     action.triggered.connect(lambda checked, plugincoche1=plugincoche: self.runplugin(plugincoche1))
 
@@ -177,11 +173,7 @@ class PluginMaitre:
     def ispluginintoolbar(self,plugin):
         return any(action.text() == plugin for action in self.toolbar.actions())
 
-
-
     def actualiser(self):
-        # self.supr_plugin_to_toolbar()
-        # self.supr_plugin_to_menu()
 
         list_plugin_coche = []
         nom_onglet = ""
@@ -213,12 +205,6 @@ class PluginMaitre:
                 f"Veuillez l'activer dans le menu \"Installer/Gérer les extensions de QGIS\"")
 
 
-    def runplugin1(self):
-        try:
-            processing_plugin = plugins["ign_espace_collaboratif"]
-            processing_plugin.getlibtransaction()
-        except KeyError:
-            print("plugin non chargé")
 
     # recuperer la liste de tous les plugins IGN installés
     def getlistplugin_ign(self):
@@ -341,7 +327,7 @@ class PluginMaitre:
 
     def supr_plugin_to_toolbar(self):
         # suppression des actions (plugin dans la toolbar
-        # les actions defini par : self.setplugintoolbar()
+        # les actions definis par : self.setplugintoolbar()
         action_to_remove = self.toolbar.actions()
         for action in action_to_remove:
             self.toolbar.removeAction(action)
@@ -370,7 +356,6 @@ class PluginMaitre:
         listWidget = QListWidget()
         self.add_plugin_in_widgetlist(listWidget)
         self.dlg.tabWidget.addTab(listWidget, nom_barre)
-        # nom = self.dlg.tabWidget.tabText(nb_onglet)
 
         self.dlg.tabWidget.setCurrentIndex(nb_onglet)
 
@@ -379,7 +364,6 @@ class PluginMaitre:
 
         self.dlgaddinglet.lineEdit_newonglet.clear()
         self.dlgaddinglet.hide()
-
 
     # ajout d'un onglet via le bouton
     def show_dial_add_onglet(self):
@@ -448,20 +432,6 @@ class PluginMaitre:
 
         self.timer = None
 
-        # initialize plugin directory
-        # self.plugin_dir = os.path.dirname(__file__)
-        # initialize locale
-        # locale = QSettings().value('locale/userLocale')[0:2]
-        # locale_path = os.path.join(
-        #     self.plugin_dir,
-        #     'i18n',
-        #     'PluginMaitre_{}.qm'.format(locale))
-        #
-        # if os.path.exists(locale_path):
-        #     self.translator = QTranslator()
-        #     self.translator.load(locale_path)
-        #     QCoreApplication.installTranslator(self.translator)
-
         # Declare instance attributes
         self.actions = []
 
@@ -494,91 +464,8 @@ class PluginMaitre:
         self.first_start = True
 
 
-    def add_action(
-        self,
-        icon_path,
-        text,
-        callback,
-        enabled_flag=True,
-        add_to_menu=True,
-        add_to_toolbar=True,
-        status_tip=None,
-        whats_this=None,
-        parent=None):
-        """Add a toolbar icon to the toolbar.
-
-        :param icon_path: Path to the icon for this action. Can be a resource
-            path (e.g. ':/plugins/foo/bar.png') or a normal file system path.
-        :type icon_path: str
-
-        :param text: Text that should be shown in menu items for this action.
-        :type text: str
-
-        :param callback: Function to be called when the action is triggered.
-        :type callback: function
-
-        :param enabled_flag: A flag indicating if the action should be enabled
-            by default. Defaults to True.
-        :type enabled_flag: bool
-
-        :param add_to_menu: Flag indicating whether the action should also
-            be added to the menu. Defaults to True.
-        :type add_to_menu: bool
-
-        :param add_to_toolbar: Flag indicating whether the action should also
-            be added to the toolbar. Defaults to True.
-        :type add_to_toolbar: bool
-
-        :param status_tip: Optional text to show in a popup when mouse pointer
-            hovers over the action.
-        :type status_tip: str
-
-        :param parent: Parent widget for the new action. Defaults None.
-        :type parent: QWidget
-
-        :param whats_this: Optional text to show in the status bar when the
-            mouse pointer hovers over the action.
-
-        :returns: The action that was created. Note that the action is also
-            added to self.actions list.
-        :rtype: QAction
-        """
-
-        # icon = QIcon(icon_path)
-        # action = QAction(icon, text, parent)
-        # action.triggered.connect(callback)
-        # action.setEnabled(enabled_flag)
-
-        # if status_tip is not None:
-        #     action.setStatusTip(status_tip)
-        #
-        # if whats_this is not None:
-        #     action.setWhatsThis(whats_this)
-        #
-        # if add_to_toolbar:
-        #     pass
-        #     # Adds plugin icon to Plugins toolbar
-        #     # self.iface.addToolBarIcon(action)
-        #     # self.toolbar.addAction(action)
-        #
-        # if add_to_menu:
-        #     self.iface.addPluginToMenu(
-        #         self.menu,
-        #         action)
-        #
-        # self.actions.append(action)
-        #
-        # return action
-
     def initGui(self):
         """Create the menu entries and toolbar icons inside the QGIS GUI."""
-
-        # icon_path = os.path.dirname(__file__) + "/icons/icon.png"
-        # self.add_action(
-        #     icon_path,
-        #     text=self.tr(u''),
-        #     callback=self.run,
-        #     parent=self.iface.mainWindow())
 
         # will be set False in run()
         self.first_start = True
@@ -653,7 +540,7 @@ class PluginMaitre:
             self.setpluginmenu()
 
             # show the dialog
-            self.dlg.setWindowTitle("Plugin maitre v1.0.0")
+            self.dlg.setWindowTitle("Plugin maitre v1.0.1")
             self.dlg.setWindowFlags(Qt.WindowStaysOnTopHint)
 
 
@@ -661,11 +548,3 @@ class PluginMaitre:
 
             self.first_start = True
 
-            # # Run the dialog event loop
-            # result = self.dlg.exec_()
-            # # See if OK was pressed
-            # if result == 0:
-            #     # self.actualiser()
-            #     # Do something useful here - delete the line containing pass and
-            #     # substitute with your code.
-            #     pass

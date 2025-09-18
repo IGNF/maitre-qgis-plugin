@@ -1,15 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
 <tabwidget>
     <onglet id="menu IGN">
-        <plugin>(IGN)assistant_odonyme</plugin>
+        <plugin>(IGN)assistant-complexe</plugin>
+        <plugin>(IGN)assistant-dfci</plugin>
     </onglet>
     <onglet id="routier">
-        <plugin>(IGN)assisstant_dfci</plugin>
-        <plugin>(IGN)assistant_complexe</plugin>
-        <plugin>(IGN)assistant_hydro</plugin>
-        <plugin>(IGN)assistant_odonyme</plugin>
-        <plugin>(IGN)assistant_route</plugin>
-        <plugin>(IGN)chemin_plus_court</plugin>
-        <plugin>(IGN)plugin_vue</plugin>
+        <plugin>(IGN)assistant-complexe</plugin>
+        <plugin>(IGN)assistant-odonyme</plugin>
+        <plugin>(IGN)assistant-route</plugin>
+        <plugin>(IGN)chemin-le-plus-court</plugin>
+        <plugin>(IGN)vues</plugin>
+    </onglet>
+    <onglet id="hydro">
+        <plugin>(IGN)assistant-hydro-DDT65</plugin>
+        <plugin>(IGN)assistant-hydro-national</plugin>
     </onglet>
 </tabwidget>

@@ -6,7 +6,7 @@
 name=IGN Plugin maitre
 qgisMinimumVersion=3.0
 description=Gestion de l'integration des plugins IGN dans le menu QGIS et/ou dans la barre d'outils.
-version=1.0.0
+version=1.0.1
 author=Gérôme PECHEUR (IGN)
 email=gerome.pecheur@ign.fr
 
@@ -21,6 +21,7 @@ about=Gestion des distributions des plugins (IGN)
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
 changelog=
+    v 1.0.1 : compatible avec la version 4.3.0 du plugin espace collaboratif
 	v 1.0.0 : version initiale
 
 # Tags are comma separated with spaces allowed
