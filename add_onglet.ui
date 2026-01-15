@@ -6,36 +6,40 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>344</width>
+    <width>245</width>
     <height>68</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>344</width>
+    <width>245</width>
     <height>68</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>344</width>
+    <width>245</width>
     <height>68</height>
    </size>
   </property>
   <property name="windowTitle">
    <string>Ajout d'une barre d'outils</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>icons/icon.png</normaloff>icons/icon.png</iconset>
+  </property>
   <widget class="QPushButton" name="pushButton_addonglet">
    <property name="geometry">
     <rect>
      <x>184</x>
      <y>30</y>
-     <width>151</width>
+     <width>51</width>
      <height>23</height>
     </rect>
    </property>
    <property name="text">
-    <string>Ajouter une barre d'outils</string>
+    <string>Ajouter</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit_newonglet">
