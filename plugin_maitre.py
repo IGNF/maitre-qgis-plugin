@@ -28,7 +28,7 @@ import subprocess
 # subprocess.run(['pyuic5', "C:/Users/gpecheur\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\plugin_maitre/aproposde.ui", '-o', "C:/Users/gpecheur\AppData\Roaming\QGIS\QGIS3\profiles\default\python\plugins\plugin_maitre/aproposde.py"])
 
 from PyQt5.QtCore import QTimer
-from PyQt5.QtWidgets import QDialog
+from PyQt5.QtWidgets import QDialog, QInputDialog, QTabBar, QLabel
 from PyQt5.uic import loadUi
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QAction,QListWidgetItem,QListWidget,QMenu,QMessageBox
@@ -48,8 +48,21 @@ from .add_onglet import *
 
 TITRE = "plugin_maitre"
 VERSION = "v1.1.0"
+MENU_IGN = "menu IGN "
+PREFIXE = "(IGN)"
 
-STYLE = """
+# 0 : bouton "actualiser/sauvegarder"
+# 1 : titre des barres d'outils
+CUSTOM_WIDGETS = (
+    "background-color: #21d847; font-weight: bold;",
+    """
+    QLabel {background-color: #a9ffa1;font-weight: bold;border: 2px solid #4CAF50;
+        border-radius: 8px;
+        padding: 2px 5px;
+    }
+    QLabel:hover {background-color: #70e070;color: #000000}
+    """,
+    """
     QTabWidget {
     background-color: #f0f0f0;}
     QTabBar::tab {background: #d0d0d0;
@@ -60,8 +73,8 @@ STYLE = """
     QTabBar::tab:selected {
         background: #37c62f;
         color: black;}
-    
-"""
+    """
+)
 
 
 def affiches_spec_bdtopo():
@@ -73,7 +86,7 @@ def afficheerreur(titre,text):
     msg.setWindowTitle(titre)
     msg.setText(text)
     msg.setIcon(QMessageBox.Warning)
-    msg.setWindowFlags(Qt.WindowStaysOnTopHint)
+    msg.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.WindowCloseButtonHint)
     msg.exec()
 
 def affichemessageAvertissement( titre, text):
@@ -86,7 +99,7 @@ def affichemessageAvertissement( titre, text):
     btnAnnuler.setStyleSheet("color:red ; font-weight: bold")
     btnValider = msg.addButton("Supprimer", QMessageBox.AcceptRole)
     btnValider.setStyleSheet("color:green ; font-weight: bold")
-    msg.setWindowFlags(Qt.WindowStaysOnTopHint)
+    msg.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.WindowCloseButtonHint)
     msg.exec()
     if msg.clickedButton() == btnAnnuler:
         return False
@@ -94,9 +107,9 @@ def affichemessageAvertissement( titre, text):
         return True
 
 def afficheDoc():
-    fichier = os.path.join(os.path.dirname(__file__), "altibonne.pdf")
+    fichier = os.path.join(os.path.dirname(__file__), "plugin_maitre.pdf")
     if not os.path.isfile(fichier):
-        afficheerreur("La documentation est introuvable", "Information")
+        afficheerreur("Attention", "La documentation est introuvable")
     else:
         subprocess.Popen(['start', '', fichier], shell=True)
 
@@ -132,7 +145,7 @@ class PluginMaitre:
 
         # ************************************************************************
         # autre plugin
-        for plugincoche in self.get_plugin_coche_fromXML("menu IGN"):
+        for plugincoche in self.get_plugin_coche_fromXML(MENU_IGN):
             if plugincoche in self.plugin_ign:
                 icon_path = os.path.join(parent_directory,plugincoche,"icons","icon_principal.png")
 
@@ -147,36 +160,49 @@ class PluginMaitre:
         menuBar = self.iface.mainWindow().menuBar()
         menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.menu)
 
+    # suppression de toutes les barres d'outils
     def suppr_all_toolbar(self):
-        self.toolbar.setParent(None)
+        if self.toolbar is not None:
+            self.toolbar.setParent(None)
+            self.toolbar = None
 
     # ajout les plugins aux toolbar en fct des fichiers de config
     def setplugintoolbar(self):
 
+        self.suppr_all_toolbar()
         current_directory = os.path.dirname(__file__)
         # Remonter d'un niveau
         parent_directory = os.path.abspath(os.path.join(current_directory, os.pardir))
         # recuperer les onglet du xml ici et boucler
         for onglet in self.get_onglet_fromXML():
+
+            # si l'onglet n'a pas de plugin defini on ajoute pas à la barre d'outil
+            # mais il reste dans le xml si on veut ajouter des plugins par la suite
+            if len(self.get_plugin_coche_fromXML(onglet)) == 0:
+                return
+
             self.toolbar = self.iface.addToolBar(onglet)
-            if onglet != "menu IGN":
+            self.toolbars[onglet] = self.toolbar
+            if onglet != MENU_IGN:
                 # text devant chaque barre d'outils
-                action_text = QAction(onglet, self.iface.mainWindow())
-                self.toolbar.addAction(action_text)
+                # action_text = QAction(onglet, self.iface.mainWindow())
+                # self.toolbar.addAction(action_text)
+                label_toolbar = QLabel(onglet)
+                label_toolbar.setStyleSheet(CUSTOM_WIDGETS[1])
+                self.toolbar.addWidget(label_toolbar)
 
                 for plugincoche in self.get_plugin_coche_fromXML(onglet):
                     icon_path = os.path.join(parent_directory, plugincoche, "icons", "icon_principal.png")
                     action = QAction(QIcon(icon_path),plugincoche,self.iface.mainWindow())
                     action.triggered.connect(lambda checked, plugincoche1=plugincoche: self.runplugin(plugincoche1))
-                    # ajout d'un attribut pour utiliser plusieurs insatnce differentes de self.toolbar
+                    # ajout d'un attribut pour utiliser plusieurs instances différentes de self.toolbar
                     setattr(self,onglet,self.toolbar)
                     self.toolbar.addAction(action)
 
-    def ispluginintoolbar(self,plugin):
-        return any(action.text() == plugin for action in self.toolbar.actions())
+    # def ispluginintoolbar(self,plugin):
+    #     return any(action.text() == plugin for action in self.toolbar.actions())
 
     def actualiser(self):
-
         list_plugin_coche = []
         nom_onglet = ""
         # ecrire les plugins cochés dans le xml en fct des onglets
@@ -212,7 +238,7 @@ class PluginMaitre:
         self.plugin_ign.clear()
 
         for plugin in listplugin:
-            if "(IGN)" in plugin:
+            if PREFIXE in plugin:
                 self.plugin_ign.append(plugin)
         return self.plugin_ign
 
@@ -234,14 +260,18 @@ class PluginMaitre:
         onglets = root.findall(".//onglet")
         for onglet in onglets:
             listWidget = QListWidget()
-            self.add_plugin_in_widgetlist(listWidget)
+            self.add_allpluginIGN_in_widgetlist(listWidget)
             self.dlg.tabWidget.addTab(listWidget,onglet.get("id"))
+            # masquer la "croix" sur l'onglet menu ign
+            self.dlg.tabWidget.tabBar().setTabButton(0, QTabBar.RightSide, None)
+            self.dlg.tabWidget.tabBar().setTabButton(0, QTabBar.LeftSide, None)
+
             self.list_onglet.append(onglet.get("id"))
 
     # initialisation d'une liste avec tous les plugins "IGN" trouvés
-    def add_plugin_in_widgetlist(self,listwidget):
+    def add_allpluginIGN_in_widgetlist(self, listwidget):
         for plugin in self.plugin_ign:
-            if "(IGN)" in plugin:
+            if PREFIXE in plugin:
                 itemtoolbar = QListWidgetItem()
                 itemtoolbar.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
                 itemtoolbar.setText(plugin)
@@ -277,11 +307,10 @@ class PluginMaitre:
                     item_find[0].setCheckState(Qt.Checked)
 
     def initXML(self):
-        print("initXML")
         # Créer la structure de l'arbre XML
         tabwidget = ET.Element("tabwidget")
         # Créer l'élément <onglet> avec l'attribut id
-        onglet = ET.SubElement(tabwidget, "onglet", id="menu IGN")
+        onglet = ET.SubElement(tabwidget, "onglet", id=MENU_IGN)
         # Créer l'élément <plugin> avec le plugin par defaut
         plugin = ET.SubElement(onglet, "plugin")
         plugin.text = "(IGN)plugin_vue"
@@ -326,9 +355,11 @@ class PluginMaitre:
         for action in action_to_remove:
             self.menu.removeAction(action)
 
-    def onglet_change(self,index):
-        # recuperation du widget listwidget contenu dans l'onglet selectionné
-        current_widget = self.dlg.tabWidget.widget(index)
+    # def onglet_change(self,index):
+    #     # recuperation du widget listwidget contenu dans l'onglet selectionné
+    #     current_widget = self.dlg.tabWidget.widget(index)
+
+
 
     def add_onglet(self):
         nom_barre = self.dlgaddonglet.lineEdit_newonglet.text()
@@ -339,11 +370,10 @@ class PluginMaitre:
                 afficheerreur("Avertissement","Ce nom existe déjà !")
                 self.dlgaddonglet.lineEdit_newonglet.clear()
                 return
-        # icon = QIcon(os.path.dirname(__file__) + "/icons/barre.png")
         nb_onglet = self.dlg.tabWidget.count()
 
         listWidget = QListWidget()
-        self.add_plugin_in_widgetlist(listWidget)
+        self.add_allpluginIGN_in_widgetlist(listWidget)
         self.dlg.tabWidget.addTab(listWidget, nom_barre)
 
         self.dlg.tabWidget.setCurrentIndex(nb_onglet)
@@ -369,17 +399,39 @@ class PluginMaitre:
         dlgAProposDe.exec_()
 
     def supp_onglet_tabwidget(self,index:int):
-        if index >0:
-            if affichemessageAvertissement("Avertissement","Voulez vous vraiment supprimer cette barre d'outils ?"):
-                # suppression de l'onglet dans le xml
-                self.suppr_ongletXML(index)
+        nom_onglet = self.dlg.tabWidget.tabText(index)
+        if affichemessageAvertissement("Avertissement","Voulez vous vraiment supprimer cette barre d'outils ?"):
+            # suppression de l'onglet dans le xml
+            self.suppr_ongletXML(index)
+            # suppression de l'onglet dans le tabwidget
+            self.dlg.tabWidget.removeTab(index)
+            # suppression de la barre d'outils
+            if hasattr(self, "toolbars") and nom_onglet in self.toolbars:
+                self.toolbars[nom_onglet].setParent(None)
+                del self.toolbars[nom_onglet]
 
-                # suppression de l'onglet dans le tabwidget
-                self.dlg.tabWidget.removeTab(index)
-                # suppression de la barre d'outils
-                self.toolbar.setParent(None)
-        else:
-            self.dlg.label_warning.setText("Pas possible de supprimer le menu IGN")
+    def renomme_onglet(self):
+        index = self.dlg.tabWidget.currentIndex()
+        if index == 0:
+            afficheerreur("Avertissement","Impossible de renommer le menu IGN")
+            return
+        ancien_nom = self.dlg.tabWidget.tabText(index)
+        nouveau_nom,ok =QInputDialog.getText(None,"Renommer la barre d'outils","Nouveau nom :",text = ancien_nom)
+        # ... et different du menu IGN
+        if ok and nouveau_nom and index != 0:
+            self.dlg.tabWidget.setTabText(index, nouveau_nom)
+            tree = ET.parse(self.path_xml)
+            root = tree.getroot()
+            ongletXml = root.find(f".//onglet[@id='{ancien_nom}']")
+            if ongletXml is None:
+                return
+            # Modifier l’attribut id
+            ongletXml.set("id", nouveau_nom)
+            ET.indent(tree, "    ")
+            tree.write(self.path_xml, encoding="utf-8", xml_declaration=True)
+
+            self.actualiser()
+
 
     def suppr_ongletXML(self,index):
         tree = ET.parse(self.path_xml)
@@ -410,6 +462,9 @@ class PluginMaitre:
 
         self.path_xml = None
         self.toolbar = None
+        # dico de toutes les toolbars pour gérer la suppression
+        self.toolbars = {}
+
         self.dlg = None
         self.iface = iface
         self.timer = None
@@ -464,6 +519,7 @@ class PluginMaitre:
             self.first_start = False
             self.dlg = PluginMaitreDialog()
             self.dlg.setWindowTitle(f"{TITRE} {VERSION}")
+            self.dlg.setParent(self.iface.mainWindow())
             self.dlg.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.WindowCloseButtonHint)
 
             # dial d'ajout d'onglet
@@ -478,12 +534,15 @@ class PluginMaitre:
 
             # bouton actualiser la toolbar
             self.dlg.pushButtonActualiser.clicked.connect(self.actualiser)
+            self.dlg.pushButtonActualiser.setStyleSheet(CUSTOM_WIDGETS[0])
             # ajouter une toolbar
             self.dlg.pushButtonAddBarre.clicked.connect(self.show_dial_add_onglet)
+            # bouton renommer
+            self.dlg.pushButton_renommer.clicked.connect(self.renomme_onglet)
             # Connecter le signal 'tabRemoved' à un slot
             self.dlg.tabWidget.tabCloseRequested.connect(self.supp_onglet_tabwidget)
             # changement d'onglet
-            self.dlg.tabWidget.currentChanged.connect(self.onglet_change)
+            # self.dlg.tabWidget.currentChanged.connect(self.onglet_change)
 
             # timer pour le label_warning
             self.timer = QTimer()
@@ -498,7 +557,7 @@ class PluginMaitre:
             self.dlg.tabWidget.clear()
 
             # apparence du tabwidget
-            self.dlg.tabWidget.setStyleSheet(STYLE)
+            self.dlg.tabWidget.setStyleSheet(CUSTOM_WIDGETS[2])
 
             if len(self.getlistplugin_ign()) == 0:
                 self.dlg.label_warning.setText("Aucun plugin IGN n'est présent")
@@ -516,8 +575,7 @@ class PluginMaitre:
             self.setplugintoolbar()
             self.setpluginmenu()
 
-            # show the dialog
-            self.dlg.show()
+            self.dlg.exec_()
 
             self.first_start = True
 
