@@ -3,10 +3,10 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=IGN Plugin maitre
+name=Plugin_maitre
 qgisMinimumVersion=3.0
 description=Gestion de l'integration des plugins IGN dans le menu QGIS et/ou dans la barre d'outils.
-version=1.0.1
+version=1.1.0
 author=Gérôme PECHEUR (IGN)
 email=gerome.pecheur@ign.fr
 
@@ -28,7 +28,7 @@ changelog=
 tags=python
 
 #homepage=http://home
-category=Plugins
+category=Vector
 icon=icons/icon.png
 # experimental flag
 experimental=False
@@ -42,7 +42,7 @@ deprecated=False
 # plugin_dependencies=
 
 Category of the plugin: Raster, Vector, Database or Web
-# category=
+# category=Vector
 
 # If the plugin can run on QGIS Server.
 server=False

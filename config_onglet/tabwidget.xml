@@ -3,31 +3,36 @@
     <onglet id="menu IGN ">
         <plugin>(IGN)altibonne</plugin>
         <plugin>(IGN)assistant-complexe</plugin>
-        <plugin>(IGN)assistant-dfci</plugin>
         <plugin>(IGN)assistant-hydro-DDT65</plugin>
-        <plugin>(IGN)assistant-hydro-national</plugin>
         <plugin>(IGN)assistant-odonyme</plugin>
         <plugin>(IGN)assistant-route</plugin>
         <plugin>(IGN)chemin-le-plus-court</plugin>
         <plugin>(IGN)jeux_attributs</plugin>
+        <plugin>(IGN)jeux_attributs_generique</plugin>
+        <plugin>(IGN)sens_numerisation</plugin>
+        <plugin>(IGN)Vues</plugin>
+        <plugin>(IGN)vueZ</plugin>
     </onglet>
     <onglet id="Routier">
         <plugin>(IGN)altibonne</plugin>
         <plugin>(IGN)assistant-complexe</plugin>
         <plugin>(IGN)assistant-dfci</plugin>
+        <plugin>(IGN)assistant-liste</plugin>
+        <plugin>(IGN)assistant-odonyme</plugin>
+        <plugin>(IGN)assistant-route</plugin>
+        <plugin>(IGN)sens_numerisation</plugin>
+        <plugin>(IGN)vueZ</plugin>
+    </onglet>
+    <onglet id="Hydro">
         <plugin>(IGN)assistant-hydro-DDT65</plugin>
         <plugin>(IGN)assistant-hydro-national</plugin>
-        <plugin>(IGN)assistant-odonyme</plugin>
-        <plugin>(IGN)assistant-route</plugin>
+    </onglet>
+    <onglet id="génerique">
+        <plugin>(IGN)altibonne</plugin>
         <plugin>(IGN)chemin-le-plus-court</plugin>
         <plugin>(IGN)jeux_attributs</plugin>
+        <plugin>(IGN)jeux_attributs_generique</plugin>
+        <plugin>(IGN)sens_numerisation</plugin>
+        <plugin>(IGN)vueZ</plugin>
     </onglet>
-    <onglet id="test">
-        <plugin>(IGN)assistant-hydro-national</plugin>
-        <plugin>(IGN)assistant-odonyme</plugin>
-        <plugin>(IGN)assistant-route</plugin>
-    </onglet>
-    <onglet id="hghg">
-        <plugin>(IGN)jeux_attributs</plugin>
-    </onglet>
-    </tabwidget>
+</tabwidget>
