@@ -42,7 +42,7 @@ TITRE = "plugin_maitre"
 VERSION = "v1.2.0"
 MENU_IGN = "menu IGN "
 PREFIXE_PLUGIN_IGN = "(IGN)"
-DOSSIER_ONGLET = "config_onglet"
+DOSSIER_ONGLET = "config_plugin_maitre"
 
 # 0 : bouton "actualiser/sauvegarder"
 # 1 : titre des barres d'outils
@@ -196,9 +196,6 @@ class PluginMaitre:
     # ==================================================
     # suppression de toutes les barres d'outils
     def suppr_all_toolbar(self):
-        # if self.toolbar is not None:
-        #     self.toolbar.setParent(None)
-        #     self.toolbar = None
         for toolbar in self.toolbars.values():
             toolbar.setParent(None)
         self.toolbars.clear()
@@ -345,7 +342,6 @@ class PluginMaitre:
         for plugin in list_plugin_coche:
             pluginXml = ET.SubElement(ongletXml,"plugin")
             pluginXml.text = plugin
-            # print("ajout de : ",pluginXml.text)
         ET.indent(root, "    ")
         tree.write(self.path_xml,encoding='utf-8', xml_declaration=True)
 
@@ -358,7 +354,6 @@ class PluginMaitre:
         if onglet_xml is not None:
             for plugin in onglet_xml.findall("plugin"):
                 onglet_xml.remove(plugin)
-                # print(plugin.text)
             tree.write(self.path_xml,encoding='utf-8', xml_declaration=True)
 
     # ==================================================
@@ -512,10 +507,10 @@ class PluginMaitre:
         self.first_start = True
 
     def unload(self):
-        action_to_remove = self.toolbar.actions()
-        for action in action_to_remove:
-            self.toolbar.removeAction(action)
-        # suppression de la toolbar (detaché du parent)
+        # action_to_remove = self.toolbar.actions()
+        # for action in action_to_remove:
+        #     self.toolbar.removeAction(action)
+        # # suppression de la toolbar (detaché du parent)
         self.suppr_all_toolbar()
 
         self.menu.deleteLater()
