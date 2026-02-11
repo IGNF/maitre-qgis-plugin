@@ -39,9 +39,10 @@ import xml.etree.ElementTree as ET
 from .add_onglet import *
 
 TITRE = "plugin_maitre"
-VERSION = "v1.1.0"
+VERSION = "v1.2.0"
 MENU_IGN = "menu IGN "
 PREFIXE_PLUGIN_IGN = "(IGN)"
+DOSSIER_ONGLET = "config_onglet"
 
 # 0 : bouton "actualiser/sauvegarder"
 # 1 : titre des barres d'outils
@@ -134,9 +135,8 @@ class PluginMaitre:
         self.listplugin_coche = []
 
         self.getlistplugin_ign()
-        self.path_xml = os.path.join(os.path.dirname(__file__), "config_onglet", "tabwidget.xml")
+        self.path_xml = os.path.join(os.path.dirname(__file__), DOSSIER_ONGLET, "tabwidget.xml")
         if not os.path.exists(self.path_xml):
-            print("fichier non trouve:", self.path_xml)
             self.initXML()
 
         self.add_plugin_in_toolbars()
@@ -326,18 +326,15 @@ class PluginMaitre:
     # ==================================================
     # si xml absent : creation d'un xml par défaut avec un plugin par défaut
     def initXML(self):
-        # Créer la structure de l'arbre XML
-        tabwidget = ET.Element("tabwidget")
-        # Créer l'élément <onglet> avec l'attribut id
-        onglet = ET.SubElement(tabwidget, "onglet", id=MENU_IGN)
-        # Créer l'élément <plugin> avec le plugin par défaut
-        plugin = ET.SubElement(onglet, "plugin")
-        plugin.text = "(IGN)plugin_vue"
-        tree = ET.ElementTree(tabwidget)
-        root = tree.getroot()
-        ET.indent(root, "    ")
-        # Sauvegarde
+        # Créer le dossier s'il n'existe pas
+        os.makedirs(os.path.join(os.path.dirname(__file__), DOSSIER_ONGLET), exist_ok=True)
+        # Racine uniquement
+        root = ET.Element("tabwidget")
+        ET.SubElement(root, "onglet", id=MENU_IGN)
+        # Écriture dans le fichier
+        tree = ET.ElementTree(root)
         tree.write(self.path_xml, encoding="utf-8", xml_declaration=True)
+
 
     # ==================================================
     # écriture du xml avec tous les plugins cochés en fonction de l'onglet

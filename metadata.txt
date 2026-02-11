@@ -6,7 +6,7 @@
 name=Plugin_maitre
 qgisMinimumVersion=3.0
 description=Gestion de l'integration des plugins IGN dans le menu QGIS et/ou dans la barre d'outils.
-version=1.1.0
+version=1.2.0
 author=Gérôme PECHEUR (IGN)
 email=gerome.pecheur@ign.fr
 
