@@ -39,7 +39,7 @@ import xml.etree.ElementTree as ET
 from .add_onglet import *
 
 TITRE = "plugin_maitre"
-VERSION = "v1.2.0"
+VERSION = "v1.3.0"
 MENU_IGN = "menu IGN "
 PREFIXE_PLUGIN_IGN = "(IGN)"
 DOSSIER_ONGLET = "config_plugin_maitre"
@@ -109,6 +109,7 @@ def afficheDoc():
 class PluginMaitre:
     def __init__(self, iface):
 
+
         self.path_xml = None
         self.toolbar = None
         # dico de toutes les toolbars pour gérer la suppression
@@ -125,6 +126,7 @@ class PluginMaitre:
         self.menu = QMenu(self.iface.mainWindow())
         self.menu.setObjectName("IGN")
         self.menu.setTitle("IGN")
+        self.menu_requete = None
 
         # list contenant les plugins IGN contenu dans le repertoire des plugins
         self.plugin_ign = []
@@ -166,6 +168,24 @@ class PluginMaitre:
         # ************************************************************************
 
         # ************************************************************************
+        # menu "Requêtes"
+        self.menu_requete = QMenu("Requêtes", self.iface.mainWindow())
+        self.menu.addMenu(self.menu_requete)
+        requete = QAction("Lancer une requêtes", self.iface.mainWindow())
+        requete.triggered.connect(self.on_requete)
+        self.menu_requete.addAction(requete)
+        # # action dans le sous-menu
+        # requete_unique = QAction("Lancer une requêtes unique", self.iface.mainWindow())
+        # requete_unique.triggered.connect(self.on_requete_unique)
+        # requete_enchaine = QAction("Lancer une requêtes enchainées", self.iface.mainWindow())
+        # requete_enchaine.triggered.connect(self.on_requete_enchaine)
+        # self.menu_requete.addAction(requete_unique)
+        # self.menu_requete.addAction(requete_enchaine)
+        self.menu.addSeparator()
+
+        # ************************************************************************
+
+        # ************************************************************************
         # documentation bduni
         icon_path = os.path.join(os.path.dirname(__file__), "icons", "spec.png")
         action = QAction(QIcon(icon_path) ,"Documentation BDTopo",self.iface.mainWindow())
@@ -175,6 +195,8 @@ class PluginMaitre:
         self.menu.addAction(action)
         self.menu.addSeparator()
         # ************************************************************************
+
+
 
         # ************************************************************************
         # autre plugin
@@ -193,9 +215,17 @@ class PluginMaitre:
         menuBar = self.iface.mainWindow().menuBar()
         menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.menu)
 
+    def on_requete(self):
+        print("on_requete")
+        self.runplugin("(IGN)requetes")
+
+
+
+
     # ==================================================
     # suppression de toutes les barres d'outils
     def suppr_all_toolbar(self):
+        print("suppr_all_toolbar")
         for toolbar in self.toolbars.values():
             toolbar.setParent(None)
         self.toolbars.clear()
