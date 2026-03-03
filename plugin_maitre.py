@@ -39,9 +39,9 @@ import xml.etree.ElementTree as ET
 from .add_onglet import *
 
 TITRE = "plugin_maitre"
-VERSION = "v1.3.0"
+VERSION = "v1.4.0"
 MENU_IGN = "menu IGN "
-PREFIXE_PLUGIN_IGN = "(IGN)"
+PREFIXE_PLUGIN_IGN = "IGN_"
 DOSSIER_ONGLET = "config_plugin_maitre"
 
 # 0 : bouton "actualiser/sauvegarder"
@@ -217,7 +217,7 @@ class PluginMaitre:
 
     def on_requete(self):
         print("on_requete")
-        self.runplugin("(IGN)requetes")
+        self.runplugin("IGN_requetes")
 
 
 
