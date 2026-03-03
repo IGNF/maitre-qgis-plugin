@@ -1,0 +1,31 @@
+name: Release QGIS Plugin
+
+on:
+  push:
+    tags:
+      - '*'
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install zip
+        run: sudo apt-get install zip -y
+
+      - name: Build plugin zip
+        run: |
+          zip -r "plugin_maitre.zip" . -x ".git/*" ".github/*"
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: "plugin_maitre.zip"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
