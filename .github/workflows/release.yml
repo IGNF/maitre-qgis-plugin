@@ -21,7 +21,12 @@ jobs:
 
       - name: Build plugin zip
         run: |
-          zip -r "plugin_maitre.zip" . -x ".git/*" ".github/*"
+          mkdir -p plugin_maitre
+          rsync -av --progress . plugin_maitre/ \
+            --exclude .git \
+            --exclude .github \
+            --exclude plugin_maitre
+          zip -r plugin_maitre.zip plugin_maitre
 
       - name: Create Release
         uses: softprops/action-gh-release@v1

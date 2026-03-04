@@ -216,16 +216,11 @@ class PluginMaitre:
         menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.menu)
 
     def on_requete(self):
-        print("on_requete")
         self.runplugin("IGN_requetes")
-
-
-
 
     # ==================================================
     # suppression de toutes les barres d'outils
     def suppr_all_toolbar(self):
-        print("suppr_all_toolbar")
         for toolbar in self.toolbars.values():
             toolbar.setParent(None)
         self.toolbars.clear()
@@ -259,6 +254,8 @@ class PluginMaitre:
     # "execution" du plugin en paramètre
     def runplugin(self,plugin):
         try:
+            # print("Plugin demandé :", plugin)
+            # print("Plugins disponibles :", list(plugins.keys()))
             processing_plugin = plugins[plugin]
             processing_plugin.initGui()  # Initialiser l'interface graphique du plugin
             processing_plugin.run()
@@ -266,6 +263,8 @@ class PluginMaitre:
             QMessageBox.warning(None, "Attention",
                 f"le plugin {plugin} n'est pas chargé\n"
                 f"Veuillez l'activer dans le menu \"Installer/Gérer les extensions de QGIS\"")
+
+
 
     # ==================================================
     # récupérer la liste de tous les plugins IGN installés
