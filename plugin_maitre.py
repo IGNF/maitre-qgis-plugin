@@ -38,8 +38,7 @@ import xml.etree.ElementTree as ET
 
 from .add_onglet import *
 
-TITRE = "plugin_maitre"
-VERSION = "v1.4.0"
+TITRE = "Plugin maitre"
 MENU_IGN = "menu IGN "
 PREFIXE_PLUGIN_IGN = "IGN_"
 DOSSIER_ONGLET = "config_plugin_maitre"
@@ -475,7 +474,7 @@ class PluginMaitre:
         dlgAProposDe = QDialog()
         loadUi(os.path.dirname(__file__) + "/aproposde.ui", dlgAProposDe)
         dlgAProposDe.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.WindowCloseButtonHint)
-        dlgAProposDe.setWindowTitle(f"{TITRE} {VERSION}")
+        dlgAProposDe.setWindowTitle(f"{TITRE}")
         dlgAProposDe.pushButtonAffichedoc.clicked.connect(afficheDoc)
         dlgAProposDe.exec_()
 
@@ -551,7 +550,7 @@ class PluginMaitre:
         if self.first_start:
             self.first_start = False
             self.dlg = PluginMaitreDialog()
-            self.dlg.setWindowTitle(f"{TITRE} {VERSION}")
+            self.dlg.setWindowTitle(f"{TITRE}")
             self.dlg.setParent(self.iface.mainWindow())
             self.dlg.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.WindowCloseButtonHint)
 
