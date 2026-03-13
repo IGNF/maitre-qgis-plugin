@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/plugins/plugin_maitre" >
-        <file>icons/icon.png</file>
-    </qresource>
-</RCC>
