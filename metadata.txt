@@ -9,6 +9,7 @@ description=Gestion de l'integration des plugins IGN dans le menu QGIS et/ou dan
 version=1.4.0
 author=Gérôme PECHEUR (IGN)
 email=gerome.pecheur@ign.fr
+license=GNU AGPL v3
 
 about=Gestion des distributions des plugins (IGN)
 
