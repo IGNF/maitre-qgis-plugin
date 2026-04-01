@@ -3,15 +3,16 @@
 # This file should be included when you package your plugin.# Mandatory items:
 
 [general]
-name=Plugin_maitre
+name=IGN maitre
 qgisMinimumVersion=3.0
-description=Gestion de l'integration des plugins IGN dans le menu QGIS et/ou dans la barre d'outils.
-version=1.4.0
+qgisMaximumVersion=4.99
+description=Centralise et intègre les plugins IGN dans un menu et barres d'outils personnalisables pour un accès simplifié.
+version=1.4.1
 author=Gérôme PECHEUR (IGN)
 email=gerome.pecheur@ign.fr
 license=GNU AGPL v3
 
-about=Gestion des distributions des plugins (IGN)
+about=Ce plugin centralise et organise les plugins IGN dans des menus et barres d’outils personnalisables, facilitant leur accès et améliorant l’ergonomie globale. Les plugins IGN sont préfixés par «IGN_».
 
 #tracker=http://bug
 #repository=http://repo
@@ -21,15 +22,13 @@ about=Gestion des distributions des plugins (IGN)
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=
-    v 1.0.1 : compatible avec la version 4.3.0 du plugin espace collaboratif
-	v 1.0.0 : version initiale
-
+changelog= version compatible QGIS3 et QGIS4
+    
 # Tags are comma separated with spaces allowed
 tags=python
 
 #homepage=http://home
-category=Vector
+#category=
 icon=icons/icon.png
 # experimental flag
 experimental=False

@@ -22,21 +22,18 @@
  ***************************************************************************/
 """
 import subprocess
-
-from PyQt5.QtWidgets import QDialog, QInputDialog, QTabBar, QLabel
-from PyQt5.uic import loadUi
-from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QAction,QListWidgetItem,QListWidget,QMenu,QMessageBox
-
-from qgis.PyQt.QtCore import Qt
+import os.path
+import xml.etree.ElementTree as ET
 import qgis
 
-from .plugin_maitre_dialog import PluginMaitreDialog
-import os.path
+from qgis.PyQt.QtWidgets import QDialog, QInputDialog, QLabel,QAction,QListWidgetItem,QListWidget,QMenu
+from qgis.PyQt.uic import loadUi
+from qgis.PyQt.QtGui import QIcon
 from qgis.utils import plugins
-import xml.etree.ElementTree as ET
 
+from .mapping_version import *
 from .add_onglet import *
+from .plugin_maitre_dialog import PluginMaitreDialog
 
 TITRE = "Plugin maitre"
 MENU_IGN = "menu IGN "
@@ -68,7 +65,6 @@ CUSTOM_WIDGETS = (
     """
 )
 
-
 def affiches_spec_bdtopo():
     import webbrowser
     webbrowser.open("https://bdtopoexplorer.ign.fr/")
@@ -77,26 +73,28 @@ def afficheerreur(titre,text):
     msg = QMessageBox()
     msg.setWindowTitle(titre)
     msg.setText(text)
-    msg.setIcon(QMessageBox.Warning)
-    msg.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.WindowCloseButtonHint)
+    msg.setIcon(Warning)
+    msg.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
     msg.exec()
 
 def affichemessageAvertissement( titre, text):
     msg = QMessageBox()
-    msg.setIcon(QMessageBox.Warning)
+    msg.setIcon(Warning)
 
     msg.setWindowTitle(titre)
     msg.setText(text)
-    btnAnnuler = msg.addButton("Annuler", QMessageBox.YesRole)
+    btnAnnuler = msg.addButton("Annuler", YesRole)
     btnAnnuler.setStyleSheet("color:red ; font-weight: bold")
-    btnValider = msg.addButton("Supprimer", QMessageBox.AcceptRole)
+    btnValider = msg.addButton("Supprimer", AcceptRole)
     btnValider.setStyleSheet("color:green ; font-weight: bold")
-    msg.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.WindowCloseButtonHint)
+    msg.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
     msg.exec()
     if msg.clickedButton() == btnAnnuler:
         return False
     if msg.clickedButton() == btnValider:
         return True
+    return None
+
 
 def afficheDoc():
     fichier = os.path.join(os.path.dirname(__file__), "plugin_maitre.pdf")
@@ -146,7 +144,6 @@ class PluginMaitre:
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
         self.first_start = True
-
 
     # creation du menu IGN
     def init_menuIGN(self):
@@ -225,9 +222,6 @@ class PluginMaitre:
         self.toolbars.clear()
         self.toolbar = None
 
-    # def ispluginintoolbar(self,plugin):
-    #     return any(action.text() == plugin for action in self.toolbar.actions())
-
     # ==================================================
     # mise a jour des toolbars et du menu lors d'ajout de plugins
     def actualiser(self):
@@ -238,7 +232,7 @@ class PluginMaitre:
             nom_onglet = self.dlg.tabWidget.tabText(onglet)
             widgetlist = self.dlg.tabWidget.widget(onglet)
             for index in range(widgetlist.count()):
-                if widgetlist.item(index).checkState() == Qt.Checked:
+                if widgetlist.item(index).checkState() == Checked:
                     list_plugin_coche.append(widgetlist.item(index).text())
 
             # suppression de tous les plugins cochés du xml avant de réécrire
@@ -262,8 +256,6 @@ class PluginMaitre:
             QMessageBox.warning(None, "Attention",
                 f"le plugin {plugin} n'est pas chargé\n"
                 f"Veuillez l'activer dans le menu \"Installer/Gérer les extensions de QGIS\"")
-
-
 
     # ==================================================
     # récupérer la liste de tous les plugins IGN installés
@@ -300,8 +292,8 @@ class PluginMaitre:
             self.add_allpluginIGN_in_widgetlist(listWidget)
             self.dlg.tabWidget.addTab(listWidget,onglet.get("id"))
             # masquer la "croix" sur l'onglet menu ign
-            self.dlg.tabWidget.tabBar().setTabButton(0, QTabBar.RightSide, None)
-            self.dlg.tabWidget.tabBar().setTabButton(0, QTabBar.LeftSide, None)
+            self.dlg.tabWidget.tabBar().setTabButton(0, RightSide, None)
+            self.dlg.tabWidget.tabBar().setTabButton(0, LeftSide, None)
 
             self.list_onglet.append(onglet.get("id"))
 
@@ -311,9 +303,9 @@ class PluginMaitre:
         for plugin in self.plugin_ign:
             if PREFIXE_PLUGIN_IGN in plugin:
                 itemtoolbar = QListWidgetItem()
-                itemtoolbar.setFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
+                itemtoolbar.setFlags(ItemIsEnabled | ItemIsUserCheckable)
                 itemtoolbar.setText(plugin)
-                itemtoolbar.setCheckState(Qt.Unchecked)
+                itemtoolbar.setCheckState(Unchecked)
                 listwidget.addItem(itemtoolbar)
 
     # ==================================================
@@ -342,11 +334,11 @@ class PluginMaitre:
 
             # pour chaque widgetlist, on coche
             for plugin_coche in list_coche:
-                item_find = widgetlist.findItems(plugin_coche, Qt.MatchExactly)
+                item_find = widgetlist.findItems(plugin_coche, MatchExactly)
                 if len(item_find) != 0:
                     item_find[0].setText(plugin_coche)
                     item_find[0].setSelected(True)
-                    item_find[0].setCheckState(Qt.Checked)
+                    item_find[0].setCheckState(Checked)
 
     # ==================================================
     # si xml absent : creation d'un xml par défaut avec un plugin par défaut
@@ -473,10 +465,10 @@ class PluginMaitre:
     def apropos(self):
         dlgAProposDe = QDialog()
         loadUi(os.path.dirname(__file__) + "/aproposde.ui", dlgAProposDe)
-        dlgAProposDe.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.WindowCloseButtonHint)
+        dlgAProposDe.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
         dlgAProposDe.setWindowTitle(f"{TITRE}")
         dlgAProposDe.pushButtonAffichedoc.clicked.connect(afficheDoc)
-        dlgAProposDe.exec_()
+        dlgAProposDe.exec()
 
 
     # ==================================================
@@ -552,11 +544,11 @@ class PluginMaitre:
             self.dlg = PluginMaitreDialog()
             self.dlg.setWindowTitle(f"{TITRE}")
             self.dlg.setParent(self.iface.mainWindow())
-            self.dlg.setWindowFlags(Qt.Dialog | Qt.WindowTitleHint | Qt.WindowCloseButtonHint)
+            self.dlg.setWindowFlags(Dialog | WindowTitleHint | WindowCloseButtonHint)
 
             # dial d'ajout d'onglet
             self.dlgaddonglet = AddOnglet()
-            self.dlgaddonglet.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.WindowCloseButtonHint)
+            self.dlgaddonglet.setWindowFlags(WindowStaysOnTopHint | WindowCloseButtonHint)
             self.dlgaddonglet.pushButton_addonglet.clicked.connect(self.add_onglet)
 
             # a propos...
@@ -593,7 +585,7 @@ class PluginMaitre:
             self.add_plugin_in_toolbars()
             self.init_menuIGN()
 
-            self.dlg.exec_()
+            self.dlg.exec()
 
             self.first_start = True
 
