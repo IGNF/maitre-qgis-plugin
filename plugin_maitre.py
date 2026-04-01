@@ -24,6 +24,8 @@
 import subprocess
 import os.path
 import xml.etree.ElementTree as ET
+from pathlib import Path
+
 import qgis
 
 from qgis.PyQt.QtWidgets import QDialog, QInputDialog, QLabel,QAction,QListWidgetItem,QListWidget,QMenu
@@ -35,7 +37,7 @@ from .mapping_version import *
 from .add_onglet import *
 from .plugin_maitre_dialog import PluginMaitreDialog
 
-TITRE = "Plugin maitre"
+TITRE = "Maître"
 MENU_IGN = "menu IGN "
 PREFIXE_PLUGIN_IGN = "IGN_"
 DOSSIER_ONGLET = "config_plugin_maitre"
@@ -97,7 +99,7 @@ def affichemessageAvertissement( titre, text):
 
 
 def afficheDoc():
-    fichier = os.path.join(os.path.dirname(__file__), "plugin_maitre.pdf")
+    fichier = Path(os.path.dirname(__file__), "plugin_maitre.pdf")
     if not os.path.isfile(fichier):
         afficheerreur("Attention", "La documentation est introuvable")
     else:
@@ -134,7 +136,7 @@ class PluginMaitre:
         self.listplugin_coche = []
 
         self.getlistplugin_ign()
-        self.path_xml = os.path.join(os.path.dirname(__file__), DOSSIER_ONGLET, "tabwidget.xml")
+        self.path_xml = Path(os.path.dirname(__file__), DOSSIER_ONGLET, "tabwidget.xml")
         if not os.path.exists(self.path_xml):
             self.initXML()
 
@@ -151,12 +153,12 @@ class PluginMaitre:
 
         current_directory = os.path.dirname(__file__)
         # Remonter d'un niveau
-        parent_directory = os.path.abspath(os.path.join(current_directory, os.pardir))
+        parent_directory = os.path.abspath(Path(current_directory, os.pardir))
 
         # ************************************************************************
         # plugin maitre
-        icon_path = os.path.join(os.path.dirname(__file__), "icons", "icon.png")
-        action = QAction(QIcon(icon_path),
+        icon_path = Path(os.path.dirname(__file__)) / "icons" / "icon.png"
+        action = QAction(QIcon(str(icon_path)),
                          TITRE,
                          self.iface.mainWindow())
         action.triggered.connect(self.run)
@@ -183,8 +185,8 @@ class PluginMaitre:
 
         # ************************************************************************
         # documentation bduni
-        icon_path = os.path.join(os.path.dirname(__file__), "icons", "spec.png")
-        action = QAction(QIcon(icon_path) ,"Documentation BDTopo",self.iface.mainWindow())
+        icon_path = Path(os.path.dirname(__file__), "icons", "spec.png")
+        action = QAction(QIcon(str(icon_path)) ,"Documentation BDTopo",self.iface.mainWindow())
 
         action.triggered.connect(affiches_spec_bdtopo)
 
@@ -198,9 +200,9 @@ class PluginMaitre:
         # autre plugin
         for plugincoche in self.get_plugin_coche_fromXML(MENU_IGN):
             if plugincoche in self.plugin_ign:
-                icon_path = os.path.join(parent_directory,plugincoche,"icons","icon_principal.png")
+                icon_path = Path(parent_directory,plugincoche,"icons","icon_principal.png")
 
-                action = QAction(QIcon(icon_path),
+                action = QAction(QIcon(str(icon_path)),
                                  plugincoche,
                                  self.iface.mainWindow())
                 action.triggered.connect(lambda checked, plugincoche1=plugincoche: self.runplugin(plugincoche1))
@@ -344,7 +346,7 @@ class PluginMaitre:
     # si xml absent : creation d'un xml par défaut avec un plugin par défaut
     def initXML(self):
         # Créer le dossier s'il n'existe pas
-        os.makedirs(os.path.join(os.path.dirname(__file__), DOSSIER_ONGLET), exist_ok=True)
+        os.makedirs(Path(os.path.dirname(__file__), DOSSIER_ONGLET), exist_ok=True)
         # Racine uniquement
         root = ET.Element("tabwidget")
         ET.SubElement(root, "onglet", id=MENU_IGN)
@@ -403,7 +405,7 @@ class PluginMaitre:
         self.suppr_all_toolbar()
         current_directory = os.path.dirname(__file__)
         # Remonter d'un niveau
-        parent_directory = os.path.abspath(os.path.join(current_directory, os.pardir))
+        parent_directory = os.path.abspath(Path(current_directory, os.pardir))
         # récupérer les onglets du xml ici et boucler
         for onglet in self.get_onglet_fromXML():
             if onglet != MENU_IGN:
@@ -421,8 +423,8 @@ class PluginMaitre:
                     self.toolbar.addWidget(label_toolbar)
 
                     for plugincoche in self.get_plugin_coche_fromXML(onglet):
-                        icon_path = os.path.join(parent_directory, plugincoche, "icons", "icon_principal.png")
-                        action = QAction(QIcon(icon_path), plugincoche, self.iface.mainWindow())
+                        icon_path = Path(parent_directory, plugincoche, "icons", "icon_principal.png")
+                        action = QAction(QIcon(str(icon_path)), plugincoche, self.iface.mainWindow())
                         action.triggered.connect(
                             lambda checked, plugincoche1=plugincoche: self.runplugin(plugincoche1))
                         # ajout d'un attribut pour utiliser plusieurs instances différentes de self.toolbar
@@ -527,12 +529,7 @@ class PluginMaitre:
         self.first_start = True
 
     def unload(self):
-        # action_to_remove = self.toolbar.actions()
-        # for action in action_to_remove:
-        #     self.toolbar.removeAction(action)
-        # # suppression de la toolbar (detaché du parent)
         self.suppr_all_toolbar()
-
         self.menu.deleteLater()
 
     # ==================================================
