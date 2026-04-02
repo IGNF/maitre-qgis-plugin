@@ -22,7 +22,7 @@ about=Ce plugin centralise et organise les plugins IGN dans des menus et barres 
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog= version compatible QGIS3 et QGIS4
+changelog= Version compatible QGIS3 et QGIS4
     
 # Tags are comma separated with spaces allowed
 tags=python

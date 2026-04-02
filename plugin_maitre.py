@@ -33,6 +33,7 @@ from qgis.PyQt.uic import loadUi
 from qgis.PyQt.QtGui import QIcon
 from qgis.utils import plugins
 
+from .maj import *
 from .mapping_version import *
 from .add_onglet import *
 from .plugin_maitre_dialog import PluginMaitreDialog
@@ -118,6 +119,8 @@ class PluginMaitre:
         self.iface = iface
         self.timer = None
 
+        self.maj = MajPlugins()
+
         # Declare instance attributes
         self.actions = []
 
@@ -126,6 +129,7 @@ class PluginMaitre:
         self.menu.setObjectName("IGN")
         self.menu.setTitle("IGN")
         self.menu_requete = None
+
 
         # list contenant les plugins IGN contenu dans le repertoire des plugins
         self.plugin_ign = []
@@ -142,6 +146,8 @@ class PluginMaitre:
 
         self.add_plugin_in_toolbars()
         self.init_menuIGN()
+
+
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -195,20 +201,22 @@ class PluginMaitre:
         # ************************************************************************
 
 
-
         # ************************************************************************
         # autre plugin
         for plugincoche in self.get_plugin_coche_fromXML(MENU_IGN):
             if plugincoche in self.plugin_ign:
                 icon_path = Path(parent_directory,plugincoche,"icons","icon_principal.png")
-
-                action = QAction(QIcon(str(icon_path)),
-                                 plugincoche,
-                                 self.iface.mainWindow())
+                action = QAction(QIcon(str(icon_path)),plugincoche,self.iface.mainWindow())
                 action.triggered.connect(lambda checked, plugincoche1=plugincoche: self.runplugin(plugincoche1))
-
                 self.menu.addAction(action)
         # ************************************************************************
+
+        # ************************************************************************
+        # verif maj
+        self.menu.addSeparator()
+        action = QAction("Vérifiez la mise à jour des plugins", self.iface.mainWindow())
+        action.triggered.connect(self.maj.on_verif_maj)
+        self.menu.addAction(action)
 
         menuBar = self.iface.mainWindow().menuBar()
         menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.menu)
@@ -258,6 +266,8 @@ class PluginMaitre:
             QMessageBox.warning(None, "Attention",
                 f"le plugin {plugin} n'est pas chargé\n"
                 f"Veuillez l'activer dans le menu \"Installer/Gérer les extensions de QGIS\"")
+
+
 
     # ==================================================
     # récupérer la liste de tous les plugins IGN installés
@@ -472,7 +482,6 @@ class PluginMaitre:
         dlgAProposDe.pushButtonAffichedoc.clicked.connect(afficheDoc)
         dlgAProposDe.exec()
 
-
     # ==================================================
     # renommer un onglet dans le xml
     # et actualisation de l'interface
@@ -524,8 +533,7 @@ class PluginMaitre:
         tree.write(self.path_xml, encoding='utf-8', xml_declaration=True)
 
     def initGui(self):
-        """Create the menu entries and toolbar icons inside the QGIS GUI."""
-        # will be set False in run()
+        QTimer.singleShot(200, self.maj.download_plugins_xml)
         self.first_start = True
 
     def unload(self):
@@ -542,6 +550,7 @@ class PluginMaitre:
             self.dlg.setWindowTitle(f"{TITRE}")
             self.dlg.setParent(self.iface.mainWindow())
             self.dlg.setWindowFlags(Dialog | WindowTitleHint | WindowCloseButtonHint)
+
 
             # dial d'ajout d'onglet
             self.dlgaddonglet = AddOnglet()
