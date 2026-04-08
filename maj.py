@@ -10,9 +10,23 @@ import xml.etree.ElementTree as ET
 from .mapping_version import *
 
 INSTALLATEUR = "PluginHub_Installer"
+UPDATE = "update"
 
 
 XML = "https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/plugins.xml?nocache=1"
+
+def log(message,reset=False):
+    """
+    Écrit un message dans le fichier de log avec un horodatage.
+    Le fichier est ouvert en mode append pour ne pas écraser les données.
+    """
+    current_directory = os.path.dirname(__file__)
+    # Remonter d'un niveau
+    parent_directory = os.path.abspath(Path(current_directory, os.pardir))
+    fichier = Path(parent_directory, "log_maitre.txt")
+    mode = "w" if reset else "a"  # "w" pour écraser, "a" pour ajouter
+    with open(fichier, mode, encoding="utf-8") as f:
+        f.write(f"{message}\n")
 
 class MajPlugins:
     def __init__(self):
@@ -70,14 +84,15 @@ class MajPlugins:
         plugins = self.getplugin_from_xml(fic_xml)
         text = ""
         for row, (nom, valeur) in enumerate(plugins.items()):
+            if nom == UPDATE:
+                continue
             version, description, lien = valeur
             version_local = self.get_version_plugins(nom, "version=")
             if version_local != version:
+                log(f"Une mise à jour est disponible pour le plugin {nom} : version locale {version_local} - version disponible {version}")
                 text += "Une mise à jour est disponible pour les plugins IGN.\n\n"
                 text += "Cliquez sur OUI pour installer\n\n"
                 text += "Vous pourrez retrouver les mises à jour dans le menu \"IGN\" > \"Vérifiez la mise à jour des plugins\""
-                # res = QMessageBox.information(None, "Mise à jour disponible", text, QMessageBox.Yes | QMessageBox.No)
-
 
                 msg_box = QMessageBox()
                 msg_box.setIcon(QMessageBox.Icon.Information)

@@ -68,6 +68,19 @@ CUSTOM_WIDGETS = (
     """
 )
 
+def log(message,reset=False):
+    """
+    Écrit un message dans le fichier de log avec un horodatage.
+    Le fichier est ouvert en mode append pour ne pas écraser les données.
+    """
+    current_directory = os.path.dirname(__file__)
+    # Remonter d'un niveau
+    parent_directory = os.path.abspath(Path(current_directory, os.pardir))
+    fichier = Path(parent_directory, "log_maitre.txt")
+    mode = "w" if reset else "a"  # "w" pour écraser, "a" pour ajouter
+    with open(fichier, mode, encoding="utf-8") as f:
+        f.write(f"{message}\n")
+
 def affiches_spec_bdtopo():
     import webbrowser
     webbrowser.open("https://bdtopoexplorer.ign.fr/")
@@ -109,6 +122,7 @@ def afficheDoc():
 class PluginMaitre:
     def __init__(self, iface):
 
+        log("Initialisation du plugin maître",reset=True)
 
         self.path_xml = None
         self.toolbar = None
@@ -533,6 +547,15 @@ class PluginMaitre:
         tree.write(self.path_xml, encoding='utf-8', xml_declaration=True)
 
     def initGui(self):
+        current_directory = os.path.dirname(__file__)
+        # Remonter d'un niveau
+        parent_directory = os.path.abspath(Path(current_directory, os.pardir))
+        exe_path = os.path.join(parent_directory, "update.exe")
+        try:
+            subprocess.Popen([exe_path], cwd=str(parent_directory))
+        except Exception as e:
+            pass
+
         QTimer.singleShot(200, self.maj.download_plugins_xml)
         self.first_start = True
 
