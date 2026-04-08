@@ -547,16 +547,19 @@ class PluginMaitre:
         tree.write(self.path_xml, encoding='utf-8', xml_declaration=True)
 
     def initGui(self):
+        QTimer.singleShot(200, self.maj.download_plugins_xml)
+        # QTimer.sleep(500)
         current_directory = os.path.dirname(__file__)
         # Remonter d'un niveau
         parent_directory = os.path.abspath(Path(current_directory, os.pardir))
+        log(f"parent_directory = {parent_directory}")
         exe_path = os.path.join(parent_directory, "update.exe")
         try:
+            log(f"Execution de update.exe")
             subprocess.Popen([exe_path], cwd=str(parent_directory))
         except Exception as e:
-            pass
+            log(f"impossible d'exécuter update.exe : {e}")
 
-        QTimer.singleShot(200, self.maj.download_plugins_xml)
         self.first_start = True
 
     def unload(self):
@@ -573,7 +576,6 @@ class PluginMaitre:
             self.dlg.setWindowTitle(f"{TITRE}")
             self.dlg.setParent(self.iface.mainWindow())
             self.dlg.setWindowFlags(Dialog | WindowTitleHint | WindowCloseButtonHint)
-
 
             # dial d'ajout d'onglet
             self.dlgaddonglet = AddOnglet()

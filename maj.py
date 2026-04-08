@@ -39,26 +39,33 @@ class MajPlugins:
         self.execute_installeur()
 
     def download_plugins_xml(self):
-        print("Téléchargement du fichier XML de mise à jour des plugins IGN...")
+        log("Téléchargement du fichier XML de mise à jour des plugins IGN...")
         # current_dir = os.path.dirname(__file__)
         # parent_dir = os.path.dirname(current_dir)
 
         nam = QgsNetworkAccessManager.instance()
         request = QNetworkRequest(QUrl(XML))
 
-        reply = nam.get(request)
-        reply.finished.connect(lambda : self.finish_download(reply,self.parent_dir))
-        print("Téléchargement en cours...")
+        self.reply = nam.get(request)
+        self.reply.finished.connect(lambda : self.finish_download(self.reply,self.parent_dir))
+        log(f"preparation d'enregistrement sous  : {Path(self.parent_dir)/"plugins.xml"}...")
+        log(f"Téléchargement en cours de {XML}...")
 
     def finish_download(self,reply, parent_dir):
+        # log(f"enregistrement de : {Path(parent_dir)/"plugins.xml"}...")
         if reply.error():
+            log(f"Erreur de telechargement du fichier XML : {reply.errorString()}")
             return
         data = reply.readAll()
         # enregistrement du fichier XML dans le dossier du plugin
-        with open(Path(parent_dir)/"plugins.xml", "wb") as f:
-            f.write(bytes(data))
-
-        self.is_maj_plugins(Path(parent_dir) / "plugins.xml")
+        try:
+            with open(Path(parent_dir)/"plugins.xml", "wb") as f:
+                f.write(bytes(data))
+            log(f"enregistrement de : {Path(parent_dir)/"plugins.xml"} terminé.")
+            self.is_maj_plugins(Path(parent_dir) / "plugins.xml")
+        except Exception as e:
+            log(f"Erreur du fichier XML : {e}")
+            return
 
     def getplugin_from_xml(self,tmp_xml):
         tree = ET.parse(tmp_xml)
@@ -68,6 +75,7 @@ class MajPlugins:
         # Parcourir les plugins
         for plugin in root.findall("pyqgis_plugin"):
             name = plugin.get("name")
+            log(f"plugin trouvé dans le XML : {name}")
             # on ne prend pas en compte l'installateur pour la notification des mises à jour
             if INSTALLATEUR in name:
                 continue
@@ -83,16 +91,20 @@ class MajPlugins:
         # et afficher une notification si une mise à jour est disponible
         plugins = self.getplugin_from_xml(fic_xml)
         text = ""
-        for row, (nom, valeur) in enumerate(plugins.items()):
-            if nom == UPDATE:
-                continue
-            version, description, lien = valeur
+        for nom, (version, description, lien) in plugins.items():
+            # if nom == UPDATE:
+            #     continue
+            # version, description, lien = valeur
             version_local = self.get_version_plugins(nom, "version=")
+            if version_local is None:
+                log(f"Plugin {nom} non trouvé localement ou metadata.txt manquant, impossible de vérifier la version.")
+                continue
             if version_local != version:
+                log(f"Mise à jour disponible pour le plugin : {nom}")
                 log(f"Une mise à jour est disponible pour le plugin {nom} : version locale {version_local} - version disponible {version}")
-                text += "Une mise à jour est disponible pour les plugins IGN.\n\n"
-                text += "Cliquez sur OUI pour installer\n\n"
-                text += "Vous pourrez retrouver les mises à jour dans le menu \"IGN\" > \"Vérifiez la mise à jour des plugins\""
+                text = ("Une mise à jour est disponible pour les plugins IGN.\n\n"
+                        "Cliquez sur OUI pour installer\n\n"
+                        "Vous pourrez retrouver les mises à jour dans le menu \"IGN\" > \"Vérifiez la mise à jour des plugins\"")
 
                 msg_box = QMessageBox()
                 msg_box.setIcon(QMessageBox.Icon.Information)
