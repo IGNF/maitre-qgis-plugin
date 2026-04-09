@@ -1,5 +1,5 @@
 from qgis.PyQt.QtCore import Qt
-from qgis.PyQt.QtWidgets import QTabBar,QMessageBox
+from qgis.PyQt.QtWidgets import QTabBar,QMessageBox,QAbstractItemView,QListWidget
 
 # QT6
 try :
@@ -17,10 +17,10 @@ try :
     Warning = QMessageBox.Icon.Warning
     YesRole = QMessageBox.ButtonRole.YesRole
     AcceptRole = QMessageBox.ButtonRole.AcceptRole
+    NoSelection = QAbstractItemView.SelectionMode.NoSelection
 # QT5
 except :
     Dialog = Qt.Dialog
-
     WindowCloseButtonHint = Qt.WindowCloseButtonHint
     WindowTitleHint = Qt.WindowTitleHint
     WindowStaysOnTopHint = Qt.WindowStaysOnTopHint
@@ -34,3 +34,4 @@ except :
     Warning = QMessageBox.Warning
     YesRole = QMessageBox.YesRole
     AcceptRole = QMessageBox.AcceptRole
+    NoSelection = QListWidget.NoSelection

@@ -21,16 +21,10 @@
  *                                                                         *
  ***************************************************************************/
 """
-import subprocess
 import os.path
-import xml.etree.ElementTree as ET
-from pathlib import Path
-
 import qgis
 
 from qgis.PyQt.QtWidgets import QDialog, QInputDialog, QLabel,QAction,QListWidgetItem,QListWidget,QMenu
-from qgis.PyQt.uic import loadUi
-from qgis.PyQt.QtGui import QIcon
 from qgis.utils import plugins
 
 from .maj import *
@@ -144,7 +138,6 @@ class PluginMaitre:
         self.menu.setTitle("IGN")
         self.menu_requete = None
 
-
         # list contenant les plugins IGN contenu dans le repertoire des plugins
         self.plugin_ign = []
         # liste des onglets
@@ -160,8 +153,6 @@ class PluginMaitre:
 
         self.add_plugin_in_toolbars()
         self.init_menuIGN()
-
-
 
         # Check if plugin was started the first time in current QGIS session
         # Must be set in initGui() to survive plugin reloads
@@ -280,8 +271,6 @@ class PluginMaitre:
             QMessageBox.warning(None, "Attention",
                 f"le plugin {plugin} n'est pas chargé\n"
                 f"Veuillez l'activer dans le menu \"Installer/Gérer les extensions de QGIS\"")
-
-
 
     # ==================================================
     # récupérer la liste de tous les plugins IGN installés

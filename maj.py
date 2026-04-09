@@ -2,6 +2,9 @@ import os
 import subprocess
 from pathlib import Path
 
+from qgis.PyQt.QtGui import QIcon
+from qgis.PyQt.QtWidgets import QDialog
+from qgis.PyQt.uic import loadUi
 from qgis.core import QgsNetworkAccessManager
 from qgis.PyQt.QtNetwork import QNetworkRequest
 from qgis.PyQt.QtCore  import QUrl,QTimer
@@ -9,7 +12,7 @@ import xml.etree.ElementTree as ET
 
 from .mapping_version import *
 
-INSTALLATEUR = "PluginHub_Installer"
+INSTALLATEUR = "PluginIGN_Installer"
 UPDATE = "update"
 
 
@@ -33,7 +36,7 @@ class MajPlugins:
         # Vérification des mises à jour des plugins IGN au lancement de QGIS
         self.current_dir = os.path.dirname(__file__)
         self.parent_dir = os.path.dirname(self.current_dir)
-        self.path_exe = list(Path(self.parent_dir).glob("*PluginHub_Installer.exe"))
+        self.path_exe = list(Path(self.parent_dir).glob(f"*{INSTALLATEUR}.exe"))
 
     def on_verif_maj(self):
         self.execute_installeur()
@@ -86,40 +89,34 @@ class MajPlugins:
             list_tmp += f"-{name}\n"
         return dico_plugin
 
+    def open_installateur(self):
+        self.execute_installeur()
+
+    def dial_maj(self):
+        self.dlgMaj = QDialog()
+        loadUi(os.path.dirname(__file__) + "/maj.ui", self.dlgMaj)
+        icon_path = Path(__file__).parent /"icons"/ "icon.png"
+        self.dlgMaj.setWindowIcon(QIcon(str(icon_path)))
+        self.dlgMaj.setWindowFlags(WindowCloseButtonHint)
+        self.dlgMaj.listWidget_maj.setSelectionMode(NoSelection)
+        self.dlgMaj.listWidget_maj.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        self.dlgMaj.setWindowTitle("Mise à jour disponible")
+        self.dlgMaj.pushButton_executer_installateur.clicked.connect(self.open_installateur)
+        self.dlgMaj.pushButton_fermer.clicked.connect(self.dlgMaj.close)# self.dlgMaj.exec()
+
     def is_maj_plugins(self,fic_xml):
         # comparer les versions des plugins installés (lecture metadata.txt) avec celles du fichier XML téléchargé
         # et afficher une notification si une mise à jour est disponible
         plugins = self.getplugin_from_xml(fic_xml)
-        text = ""
+        self.dial_maj()
         for nom, (version, description, lien) in plugins.items():
-            # if nom == UPDATE:
-            #     continue
-            # version, description, lien = valeur
             version_local = self.get_version_plugins(nom, "version=")
             if version_local is None:
                 log(f"Plugin {nom} non trouvé localement ou metadata.txt manquant, impossible de vérifier la version.")
                 continue
             if version_local != version:
-                log(f"Mise à jour disponible pour le plugin : {nom}")
-                log(f"Une mise à jour est disponible pour le plugin {nom} : version locale {version_local} - version disponible {version}")
-                text = ("Une mise à jour est disponible pour les plugins IGN.\n\n"
-                        "Cliquez sur OUI pour installer\n\n"
-                        "Vous pourrez retrouver les mises à jour dans le menu \"IGN\" > \"Vérifiez la mise à jour des plugins\"")
-
-                msg_box = QMessageBox()
-                msg_box.setIcon(QMessageBox.Icon.Information)
-                msg_box.setWindowTitle("Mise à jour disponible")
-                msg_box.setText(text)
-                msg_box.setStandardButtons(QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
-                # Mettre la fenêtre au premier plan
-                msg_box.setWindowFlags(msg_box.windowFlags() | Qt.WindowType.WindowStaysOnTopHint)
-                res = msg_box.exec()
-
-                if res == QMessageBox.Yes:
-                    self.execute_installeur()
-                if res == QMessageBox.No:
-                    return
-                break
+                self.dlgMaj.listWidget_maj.addItem(nom)
+        self.dlgMaj.exec()
 
     # retourne les infos des plugins dans le dossier de QGIS
     def get_version_plugins(self, plugin_name, type_info):
@@ -136,7 +133,7 @@ class MajPlugins:
             subprocess.Popen([str(self.path_exe[0])], cwd=str(self.parent_dir))
         except Exception as e:
             text = (f"Le programme de mise à jour est introuvable :"
-                    f"Veuillez lancer l'installateur fournit (*_PluginHub_Installer.exe)")
+                    f"Veuillez lancer l'installateur fournit (*_{INSTALLATEUR}.exe)")
             QMessageBox.warning(None, "Erreur", text)
 
 
