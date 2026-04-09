@@ -14,8 +14,8 @@ license=GNU AGPL v3
 
 about=Ce plugin centralise et organise les plugins IGN dans des menus et barres d’outils personnalisables, facilitant leur accès et améliorant l’ergonomie globale. Les plugins IGN sont préfixés par «IGN_».
 
-#tracker=http://bug
-#repository=http://repo
+tracker=https://github.com/IGNF/maitre-qgis-plugin/issues
+repository=https://github.com/IGNF/maitre-qgis-plugin
 # End of mandatory metadata
 
 # Recommended items:
@@ -27,7 +27,7 @@ changelog= Version compatible QGIS3 et QGIS4
 # Tags are comma separated with spaces allowed
 tags=python
 
-#homepage=http://home
+homepage=https://github.com/IGNF/maitre-qgis-plugin
 #category=
 icon=icons/icon.png
 # experimental flag
