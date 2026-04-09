@@ -109,6 +109,7 @@ class MajPlugins:
         # et afficher une notification si une mise à jour est disponible
         plugins = self.getplugin_from_xml(fic_xml)
         self.dial_maj()
+        is_maj = False
         for nom, (version, description, lien) in plugins.items():
             version_local = self.get_version_plugins(nom, "version=")
             if version_local is None:
@@ -116,7 +117,9 @@ class MajPlugins:
                 continue
             if version_local != version:
                 self.dlgMaj.listWidget_maj.addItem(nom)
-        self.dlgMaj.exec()
+                is_maj = True
+        if is_maj:
+            self.dlgMaj.exec()
 
     # retourne les infos des plugins dans le dossier de QGIS
     def get_version_plugins(self, plugin_name, type_info):
