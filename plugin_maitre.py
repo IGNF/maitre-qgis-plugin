@@ -26,6 +26,7 @@ import qgis
 
 from qgis.PyQt.QtWidgets import QDialog, QInputDialog, QLabel,QAction,QListWidgetItem,QListWidget,QMenu
 from qgis.utils import plugins
+from qgis.PyQt.QtCore  import QTimer
 
 from .maj import *
 from .mapping_version import *
@@ -36,6 +37,8 @@ TITRE = "Maître"
 MENU_IGN = "menu IGN "
 PREFIXE_PLUGIN_IGN = "IGN_"
 DOSSIER_ONGLET = "config_plugin_maitre"
+# liste des plugins à exclure du menu et de la barre d'outils (ex : plugin sans interface)
+EXCEPT_PLUGIN = ["IGN_Vues"]
 
 # 0 : bouton "actualiser/sauvegarder"
 # 1 : titre des barres d'outils
@@ -220,7 +223,7 @@ class PluginMaitre:
         # verif maj
         self.menu.addSeparator()
         action = QAction("Vérifiez la mise à jour des plugins", self.iface.mainWindow())
-        action.triggered.connect(self.maj.on_verif_maj)
+        action.triggered.connect(self.maj.execute_installeur)
         self.menu.addAction(action)
 
         menuBar = self.iface.mainWindow().menuBar()
@@ -279,7 +282,7 @@ class PluginMaitre:
         self.plugin_ign.clear()
 
         for plugin in listplugin:
-            if PREFIXE_PLUGIN_IGN in plugin:
+            if PREFIXE_PLUGIN_IGN in plugin and plugin not in EXCEPT_PLUGIN:
                 self.plugin_ign.append(plugin)
         return self.plugin_ign
 
@@ -536,18 +539,12 @@ class PluginMaitre:
         tree.write(self.path_xml, encoding='utf-8', xml_declaration=True)
 
     def initGui(self):
-        QTimer.singleShot(200, self.maj.download_plugins_xml)
-        # QTimer.sleep(500)
-        current_directory = os.path.dirname(__file__)
-        # Remonter d'un niveau
-        parent_directory = os.path.abspath(Path(current_directory, os.pardir))
-        log(f"parent_directory = {parent_directory}")
-        exe_path = os.path.join(parent_directory, "update.exe")
-        try:
-            log(f"Execution de update.exe")
-            subprocess.Popen([exe_path], cwd=str(parent_directory))
-        except Exception as e:
-            log(f"impossible d'exécuter update.exe : {e}")
+        # téléchargement du xml correspondant à l'installateur présent dans le repertoire des plugins
+        # puis comparaison de la version de l'installateur (exe) avec celle du xml
+        # puis comparaison des versions des plugins installés (lecture metadata.txt) avec celles du fichier XML téléchargé
+        # tout se fait dans "download_xml_plugins" car le telechargement est asynchrone
+        # et il faut attendre la fin du téléchargement pour faire les comparaisons
+        self.maj.download_xml_plugins()
 
         self.first_start = True
 

@@ -7,16 +7,16 @@ from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.uic import loadUi
 from qgis.core import QgsNetworkAccessManager
 from qgis.PyQt.QtNetwork import QNetworkRequest
-from qgis.PyQt.QtCore  import QUrl,QTimer
+from qgis.PyQt.QtCore  import QUrl
+from zipfile import ZipFile
+import pefile
+import requests
 import xml.etree.ElementTree as ET
 
 from .mapping_version import *
 
 INSTALLATEUR = "PluginIGN_Installer"
-UPDATE = "update"
-
-
-XML = "https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/plugins.xml?nocache=1"
+XML_RACINE = "https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/"
 
 def log(message,reset=False):
     """
@@ -33,44 +33,63 @@ def log(message,reset=False):
 
 class MajPlugins:
     def __init__(self):
-        # Vérification des mises à jour des plugins IGN au lancement de QGIS
+        self.installateur = None
+        self.plugins_xml = None
+        self.prefix = None
+        self.path_xml_local = None
         self.current_dir = os.path.dirname(__file__)
         self.parent_dir = os.path.dirname(self.current_dir)
         self.path_exe = list(Path(self.parent_dir).glob(f"*{INSTALLATEUR}.exe"))
 
-    def on_verif_maj(self):
-        self.execute_installeur()
+    def download_xml_plugins(self):
+        # définir quel installateur est utilisé pour adapter le nom du XML à télécharger
+        if len(self.path_exe) == 0:
+            log(f"Installateur non trouvé dans le dossier : {self.parent_dir}")
+            return
 
-    def download_plugins_xml(self):
-        log("Téléchargement du fichier XML de mise à jour des plugins IGN...")
-        # current_dir = os.path.dirname(__file__)
-        # parent_dir = os.path.dirname(current_dir)
+        if len(self.path_exe) > 1:
+            log("Plusieurs installateurs trouvés dans le dossier, impossible de déterminer lequel est utilisé :")
+            return
+
+        # formatage de l'url de téléchargement du XML en fonction du nom de l'installateur trouvé dans le dossier
+        exe_ss_ext = self.path_exe[0].stem
+        self.prefix = exe_ss_ext.replace(INSTALLATEUR, "")
+        self.prefix = self.prefix.replace("_", "")
+        self.prefix = self.prefix.lower()
+        if self.prefix != "":
+            self.prefix = f"_{self.prefix}"
+        url = rf"{XML_RACINE}plugins{self.prefix}.xml?nocache=1"
+        # formatage du chemin local du XML dans le dossier du plugin
+        self.path_xml_local = Path(self.parent_dir) / f"plugins{self.prefix}.xml"
 
         nam = QgsNetworkAccessManager.instance()
-        request = QNetworkRequest(QUrl(XML))
+        request = QNetworkRequest(QUrl(url))
+        log(f"Téléchargement du xml : {url}")
 
         self.reply = nam.get(request)
-        self.reply.finished.connect(lambda : self.finish_download(self.reply,self.parent_dir))
-        log(f"preparation d'enregistrement sous  : {Path(self.parent_dir)/"plugins.xml"}...")
-        log(f"Téléchargement en cours de {XML}...")
+        self.reply.finished.connect(lambda : self.finish_download(self.reply))
 
-    def finish_download(self,reply, parent_dir):
-        # log(f"enregistrement de : {Path(parent_dir)/"plugins.xml"}...")
+    def finish_download(self,reply):
         if reply.error():
-            log(f"Erreur de telechargement du fichier XML : {reply.errorString()}")
+            log(f"Erreur de téléchargement du fichier XML : {reply.errorString()}")
             return
         data = reply.readAll()
         # enregistrement du fichier XML dans le dossier du plugin
         try:
-            with open(Path(parent_dir)/"plugins.xml", "wb") as f:
+            with open(self.path_xml_local, "wb") as f:
                 f.write(bytes(data))
-            log(f"enregistrement de : {Path(parent_dir)/"plugins.xml"} terminé.")
-            self.is_maj_plugins(Path(parent_dir) / "plugins.xml")
+            log(f"Enregistrement terminé de : {self.path_xml_local}")
+            # liste des plugins trouvés dans le XML
+            self.plugins_xml = self.getplugin_from_xml(self.path_xml_local)
+            # y a-t-il une mise à jour de l'installateur à notifier ?
+            self.is_maj_installateur(self.path_xml_local)
+            # y a-t-il des mises à jour de plugins à notifier ?
+            self.is_maj_plugins(self.path_xml_local)
         except Exception as e:
             log(f"Erreur du fichier XML : {e}")
             return
 
-    def getplugin_from_xml(self,tmp_xml):
+    def getplugin_from_xml(self,tmp_xml,all = False):
         tree = ET.parse(tmp_xml)
         root = tree.getroot()
         list_tmp = ""
@@ -80,17 +99,16 @@ class MajPlugins:
             name = plugin.get("name")
             log(f"plugin trouvé dans le XML : {name}")
             # on ne prend pas en compte l'installateur pour la notification des mises à jour
-            if INSTALLATEUR in name:
-                continue
+            if not all:
+                if INSTALLATEUR in name:
+                    self.installateur = plugin
+                    continue
             version = plugin.get("version")
             description = plugin.find("description")
             download_url = plugin.find("download_url").text
             dico_plugin[name] = [version, description.text,download_url]
             list_tmp += f"-{name}\n"
         return dico_plugin
-
-    def open_installateur(self):
-        self.execute_installeur()
 
     def dial_maj(self):
         self.dlgMaj = QDialog()
@@ -101,28 +119,65 @@ class MajPlugins:
         self.dlgMaj.listWidget_maj.setSelectionMode(NoSelection)
         self.dlgMaj.listWidget_maj.setFocusPolicy(Qt.FocusPolicy.NoFocus)
         self.dlgMaj.setWindowTitle("Mise à jour disponible")
-        self.dlgMaj.pushButton_executer_installateur.clicked.connect(self.open_installateur)
+        self.dlgMaj.pushButton_executer_installateur.clicked.connect(self.execute_installeur)
         self.dlgMaj.pushButton_fermer.clicked.connect(self.dlgMaj.close)# self.dlgMaj.exec()
 
     def is_maj_plugins(self,fic_xml):
         # comparer les versions des plugins installés (lecture metadata.txt) avec celles du fichier XML téléchargé
         # et afficher une notification si une mise à jour est disponible
-        plugins = self.getplugin_from_xml(fic_xml)
-        self.dial_maj()
         is_maj = False
-        for nom, (version, description, lien) in plugins.items():
-            version_local = self.get_version_plugins(nom, "version=")
+        for nom, (version, description, lien) in self.plugins_xml.items():
+            version_local = self.get_info_plugins(nom, "version=")
             if version_local is None:
                 log(f"Plugin {nom} non trouvé localement ou metadata.txt manquant, impossible de vérifier la version.")
                 continue
             if version_local != version:
+                log(f"Mise à jour disponible pour {nom} : version locale : {version_local}, version disponible : {version}")
+                self.dial_maj()
                 self.dlgMaj.listWidget_maj.addItem(nom)
                 is_maj = True
         if is_maj:
             self.dlgMaj.exec()
 
+    def is_maj_installateur(self,fic_xml):
+        # comparer la version de l'installateur (lecture metadata.txt) avec celle du fichier XML téléchargé
+        # et afficher une notification si une mise à jour est disponible
+        version_xml = self.installateur.get('version')
+        version_local = self.get_version_installateur()
+        if version_local is None:
+            log(f"Installateur {INSTALLATEUR} non trouvé localement, impossible de vérifier la version.")
+            return
+        if version_local != version_xml:
+            log(f"Mise à jour disponible pour {self.installateur.get('name')} : version locale : {version_local}, version disponible : {version_xml}")
+            log (f"\tInstallation de la mise  jour de l'installateur : {self.installateur.get('name')} ...")
+            zip_path = Path(self.parent_dir) / f"{self.installateur.get('name')}.zip"
+
+            # suppression du fichier zip s'il existe déjà
+            self.suppr_fichier(zip_path)
+
+            # téléchargement de l'installateur (zip) depuis le lien du XML
+            url = self.installateur.find("download_url").text
+            self.download_exe(url,zip_path)
+
+            # supprimer l'exe s'il existe déjà dans le dossier avant de dézipper le nouveau
+            self.suppr_fichier(self.path_exe[0])
+
+            # dézipper le fichier téléchargé
+            self.dezippe_file(zip_path)
+
+        else:
+            log(f"{self.installateur.get('name')} est à jour")
+
+    def suppr_fichier(self, zip_path):
+        if os.path.exists(zip_path):
+            try:
+                os.remove(zip_path)
+                log(f"\tFichier supprimé : \n\t\t{zip_path}")
+            except Exception as e:
+                log(f"\tErreur lors de la suppression du fichier  : \n\t\t{e}")
+
     # retourne les infos des plugins dans le dossier de QGIS
-    def get_version_plugins(self, plugin_name, type_info):
+    def get_info_plugins(self, plugin_name, type_info):
         fic_metadata = os.path.join(self.parent_dir, plugin_name,"metadata.txt")
         if os.path.exists(fic_metadata):
             with open(fic_metadata, "r", encoding="utf-8") as f:
@@ -131,7 +186,50 @@ class MajPlugins:
                         return line.strip().split("=")[1]
         return None
 
+    def get_version_installateur(self):
+        if not self.path_exe:
+            return None
+        with pefile.PE(self.path_exe[0]) as pe:
+            # Extraire les informations de version
+            for fileinfo in pe.FileInfo:
+                for entry in fileinfo:
+                    if entry.Key.decode() == 'StringFileInfo':
+                        for st in entry.StringTable:
+                            for k, v in st.entries.items():
+                                if k.decode() == "FileVersion":
+                                    return v.decode()
+        return None
+
+    def download_exe(self,url,destination):
+        try:
+            response = requests.get(url, stream=True)
+            response.raise_for_status()
+            with open(destination, "wb") as f:
+                for chunk in response.iter_content(chunk_size=8192):
+                    if chunk:
+                        f.write(chunk)
+            log(f"\tTéléchargement terminé : \n\t\t{destination}")
+
+        except Exception as e:
+            log(f"\tErreur de téléchargement : \n\t\t{e}")
+
+    def dezippe_file(self,zip_path):
+        # Chemin du fichier zip
+        # Dossier de destination
+        extract_to = Path(self.parent_dir)
+        # Décompression
+        with ZipFile(zip_path, 'r') as zip_ref:
+            zip_ref.extractall(extract_to)
+            log(f"\tFichier zip extrait : \n\t\t{zip_path}")
+        # supprimer le fichier zip après extraction
+        try:
+            os.remove(zip_path)
+            log(f"\tFichier zip supprimé : \n\t\t{zip_path}")
+        except Exception as e:
+            log(f"\tErreur lors de la suppression du fichier zip : \n\t\t{e}")
+
     def execute_installeur(self):
+        self.dlgMaj.close()
         try:
             subprocess.Popen([str(self.path_exe[0])], cwd=str(self.parent_dir))
         except Exception as e:
