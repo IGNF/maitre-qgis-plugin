@@ -5,8 +5,7 @@ from pathlib import Path
 from qgis.PyQt.QtGui import QIcon
 from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.uic import loadUi
-from qgis.core import QgsNetworkAccessManager
-from qgis.PyQt.QtNetwork import QNetworkRequest
+from qgis.core import QgsNetworkContentFetcher
 from qgis.PyQt.QtCore  import QUrl
 from zipfile import ZipFile
 import pefile
@@ -62,22 +61,23 @@ class MajPlugins:
         # formatage du chemin local du XML dans le dossier du plugin
         self.path_xml_local = Path(self.parent_dir) / f"plugins{self.prefix}.xml"
 
-        nam = QgsNetworkAccessManager.instance()
-        request = QNetworkRequest(QUrl(url))
         log(f"Téléchargement du xml : {url}")
+        self.fetcher = QgsNetworkContentFetcher()
+        self.fetcher.finished.connect(self.finish_download)
+        self.fetcher.fetchContent(QUrl(url))
 
-        self.reply = nam.get(request)
-        self.reply.finished.connect(lambda : self.finish_download(self.reply))
-
-    def finish_download(self,reply):
-        if reply.error():
+    def finish_download(self):
+        reply = self.fetcher.reply()
+        from qgis.PyQt.QtNetwork import QNetworkReply
+        if reply.error() != QNetworkReply.NetworkError.NoError:
             log(f"Erreur de téléchargement du fichier XML : {reply.errorString()}")
             return
-        data = reply.readAll()
+        data = self.fetcher.contentAsString()
+
         # enregistrement du fichier XML dans le dossier du plugin
         try:
-            with open(self.path_xml_local, "wb") as f:
-                f.write(bytes(data))
+            with open(self.path_xml_local, "w") as f:
+                f.write(data)
             log(f"Enregistrement terminé de : {self.path_xml_local}")
             # liste des plugins trouvés dans le XML
             self.plugins_xml = self.getplugin_from_xml(self.path_xml_local)
