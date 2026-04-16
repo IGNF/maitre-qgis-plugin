@@ -125,6 +125,7 @@ class MajPlugins:
     def is_maj_plugins(self,fic_xml):
         # comparer les versions des plugins installés (lecture metadata.txt) avec celles du fichier XML téléchargé
         # et afficher une notification si une mise à jour est disponible
+        self.dial_maj()
         is_maj = False
         for nom, (version, description, lien) in self.plugins_xml.items():
             version_local = self.get_info_plugins(nom, "version=")
@@ -133,7 +134,6 @@ class MajPlugins:
                 continue
             if version_local != version:
                 log(f"Mise à jour disponible pour {nom} : version locale : {version_local}, version disponible : {version}")
-                self.dial_maj()
                 self.dlgMaj.listWidget_maj.addItem(nom)
                 is_maj = True
         if is_maj:
