@@ -21,12 +21,12 @@
  *                                                                         *
  ***************************************************************************/
 """
+import importlib
 import os.path
 import qgis
 
-from qgis.PyQt.QtWidgets import QDialog, QInputDialog, QLabel,QAction,QListWidgetItem,QListWidget,QMenu
+from qgis.PyQt.QtWidgets import QInputDialog, QLabel,QAction,QListWidgetItem,QMenu
 from qgis.utils import plugins
-from qgis.PyQt.QtCore  import QTimer
 
 from .maj import *
 from .mapping_version import *
@@ -265,8 +265,6 @@ class PluginMaitre:
     # "execution" du plugin en paramètre
     def runplugin(self,plugin):
         try:
-            # print("Plugin demandé :", plugin)
-            # print("Plugins disponibles :", list(plugins.keys()))
             processing_plugin = plugins[plugin]
             processing_plugin.initGui()  # Initialiser l'interface graphique du plugin
             processing_plugin.run()
@@ -538,6 +536,29 @@ class PluginMaitre:
         ET.indent(root, "    ")
         tree.write(self.path_xml, encoding='utf-8', xml_declaration=True)
 
+    def test_dependances(self):
+        # test si les packages necessaires sont installés
+        packages = ["pefile", "requests"]
+        self.package_manquants = []
+        for package in packages:
+            try:
+                importlib.import_module(package)
+            except ImportError:
+                self.package_manquants.append(package)
+        if len(self.package_manquants) > 0:
+            texte = "Le plugin Maître nécessite les packages suivants :<br><br>"
+            for package in self.package_manquants:
+                texte += f"<span style='color:red;'>- {package}</span><br>"
+            texte += "<br>Veuillez les installer avant d'utiliser le plugin Maître."
+            texte += "<br><br>Exemple d'installation : <br>"
+            texte += "-- Ouvrir le shell puis se placer sous<br>&nbsp;&nbsp;&nbsp;&nbsp; : C:/Program Files/QGIS 3.44.8/bin  (chemin à adapter)<br>"
+            texte += "--  Taper :"
+            for package in self.package_manquants:
+                texte += f"<br>&nbsp;&nbsp;&nbsp;&nbsp; .\python-qgis.bat -m pip install <span style='color:red;'>{package}</span>"
+            QMessageBox.warning(None, "Avertissement", texte)
+            return True
+        return False
+
     def initGui(self):
         # téléchargement du xml correspondant à l'installateur présent dans le repertoire des plugins
         # puis comparaison de la version de l'installateur (exe) avec celle du xml
@@ -554,6 +575,8 @@ class PluginMaitre:
 
     # ==================================================
     def run(self):
+        if self.test_dependances():
+            return
         # Create the dialog with elements (after translation) and keep reference
         # Only create GUI ONCE in callback, so that it will only load when the plugin is started
         if self.first_start:

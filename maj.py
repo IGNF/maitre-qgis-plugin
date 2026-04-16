@@ -1,5 +1,6 @@
 import os
 import subprocess
+import sys
 from pathlib import Path
 
 from qgis.PyQt.QtGui import QIcon
@@ -82,7 +83,7 @@ class MajPlugins:
             # liste des plugins trouvés dans le XML
             self.plugins_xml = self.getplugin_from_xml(self.path_xml_local)
             # y a-t-il une mise à jour de l'installateur à notifier ?
-            self.is_maj_installateur(self.path_xml_local)
+            self.is_maj_installateur()
             # y a-t-il des mises à jour de plugins à notifier ?
             self.is_maj_plugins(self.path_xml_local)
         except Exception as e:
@@ -139,7 +140,7 @@ class MajPlugins:
         if is_maj:
             self.dlgMaj.exec()
 
-    def is_maj_installateur(self,fic_xml):
+    def is_maj_installateur(self):
         # comparer la version de l'installateur (lecture metadata.txt) avec celle du fichier XML téléchargé
         # et afficher une notification si une mise à jour est disponible
         version_xml = self.installateur.get('version')
