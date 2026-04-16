@@ -229,7 +229,13 @@ class MajPlugins:
             log(f"\tErreur lors de la suppression du fichier zip : \n\t\t{e}")
 
     def execute_installeur(self):
-        self.dlgMaj.close()
+        # test si le dial de notification de mise à jour est ouvert et le fermer avant de lancer l'installateur
+        try:
+            if getattr(self, "dlgMaj", None):
+                self.dlgMaj.close()
+
+        except Exception:
+            pass
         try:
             subprocess.Popen([str(self.path_exe[0])], cwd=str(self.parent_dir))
         except Exception as e:
