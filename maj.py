@@ -1,15 +1,15 @@
 import os
 import subprocess
-import sys
+import importlib
 from pathlib import Path
 
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QDialog
+from qgis.PyQt.QtWidgets import QDialog,QApplication
 from qgis.PyQt.uic import loadUi
-from qgis.core import QgsNetworkContentFetcher
+from qgis.core import QgsNetworkContentFetcher,QgsApplication
 from qgis.PyQt.QtCore  import QUrl
 from zipfile import ZipFile
-import pefile
+# import pefile
 import requests
 import xml.etree.ElementTree as ET
 
@@ -17,6 +17,7 @@ from .mapping_version import *
 
 INSTALLATEUR = "PluginIGN_Installer"
 XML_RACINE = "https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/"
+PACKAGES = ["pefile"]
 
 def log(message,reset=False):
     """
@@ -32,7 +33,8 @@ def log(message,reset=False):
         f.write(f"{message}\n")
 
 class MajPlugins:
-    def __init__(self):
+    def __init__(self,iface):
+        self.iface = iface
         self.installateur = None
         self.plugins_xml = None
         self.prefix = None
@@ -83,9 +85,10 @@ class MajPlugins:
             # liste des plugins trouvés dans le XML
             self.plugins_xml = self.getplugin_from_xml(self.path_xml_local)
             # y a-t-il une mise à jour de l'installateur à notifier ?
-            self.is_maj_installateur()
+            if self.is_maj_installateur():
+                self.installe_installateur()
             # y a-t-il des mises à jour de plugins à notifier ?
-            self.is_maj_plugins(self.path_xml_local)
+            self.is_maj_plugins()
         except Exception as e:
             log(f"Erreur du fichier XML : {e}")
             return
@@ -123,7 +126,7 @@ class MajPlugins:
         self.dlgMaj.pushButton_executer_installateur.clicked.connect(self.execute_installeur)
         self.dlgMaj.pushButton_fermer.clicked.connect(self.dlgMaj.close)# self.dlgMaj.exec()
 
-    def is_maj_plugins(self,fic_xml):
+    def is_maj_plugins(self):
         # comparer les versions des plugins installés (lecture metadata.txt) avec celles du fichier XML téléchargé
         # et afficher une notification si une mise à jour est disponible
         self.dial_maj()
@@ -146,28 +149,28 @@ class MajPlugins:
         version_xml = self.installateur.get('version')
         version_local = self.get_version_installateur()
         if version_local is None:
-            log(f"Installateur {INSTALLATEUR} non trouvé localement, impossible de vérifier la version.")
-            return
+            log(f"Installateur {INSTALLATEUR} non trouvé localement (ou pefile n'est pas installé), impossible de vérifier la version.")
+            return False
+
         if version_local != version_xml:
             log(f"Mise à jour disponible pour {self.installateur.get('name')} : version locale : {version_local}, version disponible : {version_xml}")
-            log (f"\tInstallation de la mise  jour de l'installateur : {self.installateur.get('name')} ...")
-            zip_path = Path(self.parent_dir) / f"{self.installateur.get('name')}.zip"
-
-            # suppression du fichier zip s'il existe déjà
-            self.suppr_fichier(zip_path)
-
-            # téléchargement de l'installateur (zip) depuis le lien du XML
-            url = self.installateur.find("download_url").text
-            self.download_exe(url,zip_path)
-
-            # supprimer l'exe s'il existe déjà dans le dossier avant de dézipper le nouveau
-            self.suppr_fichier(self.path_exe[0])
-
-            # dézipper le fichier téléchargé
-            self.dezippe_file(zip_path)
-
+            log (f"\tInstallation de la mise à jour de l'installateur : {self.installateur.get('name')} ...")
+            return True
         else:
-            log(f"{self.installateur.get('name')} est à jour")
+            log(f"{self.installateur.get('name')} est à jour (version locale :{version_local} -- version_xml : {version_xml})")
+
+    def installe_installateur(self):
+        zip_path = Path(self.parent_dir) / f"{self.installateur.get('name')}.zip"
+        # suppression du fichier zip s'il existe déjà
+        self.suppr_fichier(zip_path)
+        # téléchargement de l'installateur (zip) depuis le lien du XML
+        url = self.installateur.find("download_url").text
+        self.download_exe(url, zip_path)
+        # supprimer l'exe s'il existe déjà dans le dossier avant de dézipper le nouveau
+        self.suppr_fichier(self.path_exe[0])
+        # dézipper le fichier téléchargé
+        self.dezippe_file(zip_path)
+
 
     def suppr_fichier(self, zip_path):
         if os.path.exists(zip_path):
@@ -188,6 +191,9 @@ class MajPlugins:
         return None
 
     def get_version_installateur(self):
+        if self.need_package():
+            return None # pefile dans ce cas
+        import pefile
         if not self.path_exe:
             return None
         with pefile.PE(self.path_exe[0]) as pe:
@@ -234,7 +240,6 @@ class MajPlugins:
         try:
             if getattr(self, "dlgMaj", None):
                 self.dlgMaj.close()
-
         except Exception:
             pass
         try:
@@ -243,6 +248,49 @@ class MajPlugins:
             text = (f"Le programme de mise à jour est introuvable :"
                     f"Veuillez lancer l'installateur fournit (*_{INSTALLATEUR}.exe)")
             QMessageBox.warning(None, "Erreur", text)
+
+    def need_package(self):
+        # test si les packages necessaires sont installés
+        self.package_manquants = ""
+        for package in PACKAGES:
+            try:
+                importlib.import_module(package)
+            except ImportError:
+                self.package_manquants = package
+        #  tout est OK
+        if not self.package_manquants:
+            return False
+        texte = "Le plugin Maître nécessite le package <span style='color:red;'>pefile</span><br><br>"
+        texte += "Voulez vous l'installer maintenant?"
+        reponse = QMessageBox.question(
+            self.iface.mainWindow(),
+            "Package manquant",
+            texte,
+            QMessageBox.Yes | QMessageBox.No,QMessageBox.Yes)
+        if reponse == QMessageBox.Yes:
+            self.install_package()
+            return True
+        else:
+            texte = "package manquant : <span style='color:red;'>pefile</span><br>"
+            texte += "Si une mise à jour de *_PluginIGN_installer existe elle ne pourra pas s'installer"
+            QMessageBox.warning(self.iface.mainWindow(),"Avertissement",texte)
+        return True
+
+    def install_package(self):
+        prefix = Path(QgsApplication.prefixPath())
+        install_root = prefix.parent.parent
+        osgeo_bat = install_root / "OSGeo4W.bat"
+        if not osgeo_bat.exists():
+            text = f"Fichier introuvable : {osgeo_bat}\n"
+            text += f"Impossible d'installer le package pefile"
+            QMessageBox.critical(self.iface.mainWindow(),"Erreur",text)
+            return
+
+        texte = "L'installation va commencer, veuillez attendre le message de fin d'installation du package"
+        QMessageBox.information(self.iface.mainWindow(), "Installation du package", texte)
+        subprocess.run([str(osgeo_bat), "python", "-m", "pip", "install", "pefile"],shell=True)
+        text = "Packages installés ! \nVeuillez redémarrer QGIS pour prendre en compte le package."
+        QMessageBox.information(self.iface.mainWindow(), "Installation du package", text)
 
 
 
