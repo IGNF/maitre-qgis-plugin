@@ -1,4 +1,5 @@
 config_plugin_maitre/
+MAJ_GITHUB/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

@@ -140,6 +140,7 @@ class PluginMaitre:
         self.menu.setObjectName("IGN")
         self.menu.setTitle("IGN")
         self.menu_requete = None
+        self.menu_config = None
 
         # list contenant les plugins IGN contenu dans le repertoire des plugins
         self.plugin_ign = []
@@ -172,11 +173,23 @@ class PluginMaitre:
         # ************************************************************************
         # plugin maitre
         icon_path = Path(os.path.dirname(__file__)) / "icons" / "icon.png"
-        action = QAction(QIcon(str(icon_path)),
-                         TITRE,
-                         self.iface.mainWindow())
+        action = QAction(QIcon(str(icon_path)),"Configuration",self.iface.mainWindow())
         action.triggered.connect(self.run)
         self.menu.addAction(action)
+
+        # self.menu_config = QMenu("Configuration", self.iface.mainWindow())
+        # icon_path_scale = Path(os.path.dirname(__file__)) / "icons" / "scale.png"
+        # icon_path_config = Path(os.path.dirname(__file__)) / "icons" / "icon.png"
+        # self.menu_config.setIcon(QIcon(str(icon_path_config)))
+        # self.menu.addMenu(self.menu_config)
+        #
+        # confplugin = QAction(QIcon(str(icon_path_scale)), "Configuration plugins", self.iface.mainWindow())
+        # self.menu_config.addAction(confplugin)
+        # confplugin.triggered.connect(self.run)
+        #
+        # scalezoom = QAction(QIcon(str(icon_path_scale)),"Echelle de visibilité",self.iface.mainWindow())
+        # self.menu_config.addAction(scalezoom)
+        # scalezoom.triggered.connect(self.run)
         # ************************************************************************
 
         # ************************************************************************
@@ -225,6 +238,13 @@ class PluginMaitre:
         action = QAction("Vérifiez la mise à jour des plugins", self.iface.mainWindow())
         action.triggered.connect(self.maj.execute_installeur)
         self.menu.addAction(action)
+
+        # *************************************************************************
+        # paramètres
+        # self.menu.addSeparator()
+        # action = QAction("Paramètres", self.iface.mainWindow())
+        # self.menu.addAction(action)
+
 
         menuBar = self.iface.mainWindow().menuBar()
         menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.menu)
@@ -543,7 +563,7 @@ class PluginMaitre:
         # puis comparaison des versions des plugins installés (lecture metadata.txt) avec celles du fichier XML téléchargé
         # tout se fait dans "download_xml_plugins" car le téléchargement est asynchrone
         # et il faut attendre la fin du téléchargement pour faire les comparaisons
-        self.maj.download_xml_plugins()
+        self.maj.download_file("XML")
 
         self.first_start = True
 

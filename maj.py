@@ -4,12 +4,11 @@ import importlib
 from pathlib import Path
 
 from qgis.PyQt.QtGui import QIcon
-from qgis.PyQt.QtWidgets import QDialog,QApplication
+from qgis.PyQt.QtWidgets import QDialog
 from qgis.PyQt.uic import loadUi
 from qgis.core import QgsNetworkContentFetcher,QgsApplication
 from qgis.PyQt.QtCore  import QUrl
 from zipfile import ZipFile
-# import pefile
 import requests
 import xml.etree.ElementTree as ET
 
@@ -18,6 +17,7 @@ from .mapping_version import *
 INSTALLATEUR = "PluginIGN_Installer"
 XML_RACINE = "https://raw.githubusercontent.com/IGNF/collaboratif-plugins/main/"
 PACKAGES = ["pefile"]
+PEFILE = "pefile-2024.8.26-py3-none-any.whl"
 
 def log(message,reset=False):
     """
@@ -43,37 +43,63 @@ class MajPlugins:
         self.parent_dir = os.path.dirname(self.current_dir)
         self.path_exe = list(Path(self.parent_dir).glob(f"*{INSTALLATEUR}.exe"))
 
-    def download_xml_plugins(self):
-        # définir quel installateur est utilisé pour adapter le nom du XML à télécharger
-        if len(self.path_exe) == 0:
-            log(f"Installateur non trouvé dans le dossier : {self.parent_dir}")
-            return
-
-        if len(self.path_exe) > 1:
-            log("Plusieurs installateurs trouvés dans le dossier, impossible de déterminer lequel est utilisé :")
-            return
-
-        # formatage de l'url de téléchargement du XML en fonction du nom de l'installateur trouvé dans le dossier
-        exe_ss_ext = self.path_exe[0].stem
-        self.prefix = exe_ss_ext.replace(INSTALLATEUR, "")
-        self.prefix = self.prefix.replace("_", "")
-        self.prefix = self.prefix.lower()
-        if self.prefix != "":
-            self.prefix = f"_{self.prefix}"
-        url = rf"{XML_RACINE}plugins{self.prefix}.xml?nocache=1"
-        # formatage du chemin local du XML dans le dossier du plugin
-        self.path_xml_local = Path(self.parent_dir) / f"plugins{self.prefix}.xml"
-
-        log(f"Téléchargement du xml : {url}")
+    def download_file(self,type_file):
+        url = None
         self.fetcher = QgsNetworkContentFetcher()
-        self.fetcher.finished.connect(self.finish_download)
+        # définir quel installateur est utilisé pour adapter le nom du XML à télécharger
+        if type_file == "XML":
+            if len(self.path_exe) == 0:
+                log(f"Installateur non trouvé dans le dossier : {self.parent_dir}")
+                return
+
+            if len(self.path_exe) > 1:
+                log("Plusieurs installateurs trouvés dans le dossier, impossible de déterminer lequel est utilisé :")
+                return
+
+            # formatage de l'url de téléchargement du XML en fonction du nom de l'installateur trouvé dans le dossier
+            exe_ss_ext = self.path_exe[0].stem
+            self.prefix = exe_ss_ext.replace(INSTALLATEUR, "")
+            self.prefix = self.prefix.replace("_", "")
+            self.prefix = self.prefix.lower()
+            if self.prefix != "":
+                self.prefix = f"_{self.prefix}"
+            url = rf"{XML_RACINE}plugins{self.prefix}.xml?nocache=1"
+            # formatage du chemin local du XML dans le dossier du plugin
+            self.path_xml_local = Path(self.parent_dir) / f"plugins{self.prefix}.xml"
+            log(f"Téléchargement du xml : {url}")
+            self.fetcher.finished.connect(self.finish_download)
+
+        elif type_file == "EXE":
+            url = self.installateur.find("download_url").text
+            log(f"\tTéléchargement de l'installateur : {url}")
+            self.fetcher.finished.connect(self.finish_download_zip)
+
         self.fetcher.fetchContent(QUrl(url))
+
+    def finish_download_zip(self):
+        reply = self.fetcher.reply()
+        from qgis.PyQt.QtNetwork import QNetworkReply
+        if reply.error() != QNetworkReply.NetworkError.NoError:
+            log(f"Erreur téléchargement zip : {reply.errorString()}")
+            return
+        try:
+            data = reply.readAll().data()
+            with open(self.zip_path, "wb") as f:
+                f.write(data)
+            log(f"\tZIP de l'installateur téléchargé : {self.zip_path}")
+            # supprimer l'exe s'il existe déjà dans le dossier avant de dézipper le nouveau
+            self.suppr_fichier(self.path_exe[0])
+            # dézipper le fichier téléchargé
+            self.dezippe_file(self.zip_path)
+
+        except Exception as e:
+            log(f"Erreur sauvegarde zip : {repr(e)}")
 
     def finish_download(self):
         reply = self.fetcher.reply()
         from qgis.PyQt.QtNetwork import QNetworkReply
         if reply.error() != QNetworkReply.NetworkError.NoError:
-            log(f"Erreur de téléchargement du fichier XML : {reply.errorString()}")
+            log(f"Erreur de téléchargement du fichier : {reply.errorString()}")
             return
         data = self.fetcher.contentAsString()
 
@@ -154,29 +180,22 @@ class MajPlugins:
 
         if version_local != version_xml:
             log(f"Mise à jour disponible pour {self.installateur.get('name')} : version locale : {version_local}, version disponible : {version_xml}")
-            log (f"\tInstallation de la mise à jour de l'installateur : {self.installateur.get('name')} ...")
             return True
         else:
             log(f"{self.installateur.get('name')} est à jour (version locale :{version_local} -- version_xml : {version_xml})")
 
     def installe_installateur(self):
-        zip_path = Path(self.parent_dir) / f"{self.installateur.get('name')}.zip"
+        self.zip_path = Path(self.parent_dir) / f"{self.installateur.get('name')}.zip"
         # suppression du fichier zip s'il existe déjà
-        self.suppr_fichier(zip_path)
+        self.suppr_fichier(self.zip_path)
         # téléchargement de l'installateur (zip) depuis le lien du XML
-        url = self.installateur.find("download_url").text
-        self.download_exe(url, zip_path)
-        # supprimer l'exe s'il existe déjà dans le dossier avant de dézipper le nouveau
-        self.suppr_fichier(self.path_exe[0])
-        # dézipper le fichier téléchargé
-        self.dezippe_file(zip_path)
-
+        self.download_file("EXE")
 
     def suppr_fichier(self, zip_path):
         if os.path.exists(zip_path):
             try:
                 os.remove(zip_path)
-                log(f"\tFichier supprimé : \n\t\t{zip_path}")
+                log(f"\tSuppression de : \n\t\t{zip_path}")
             except Exception as e:
                 log(f"\tErreur lors de la suppression du fichier  : \n\t\t{e}")
 
@@ -207,7 +226,7 @@ class MajPlugins:
                                     return v.decode()
         return None
 
-    def download_exe(self,url,destination):
+    def download_exe(self, url, destination):
         try:
             response = requests.get(url, stream=True)
             response.raise_for_status()
@@ -227,11 +246,11 @@ class MajPlugins:
         # Décompression
         with ZipFile(zip_path, 'r') as zip_ref:
             zip_ref.extractall(extract_to)
-            log(f"\tFichier zip extrait : \n\t\t{zip_path}")
+            log(f"\tExtraction de : \n\t\t{zip_path}")
         # supprimer le fichier zip après extraction
         try:
             os.remove(zip_path)
-            log(f"\tFichier zip supprimé : \n\t\t{zip_path}")
+            log(f"\tSuppression du zip : \n\t\t{zip_path}")
         except Exception as e:
             log(f"\tErreur lors de la suppression du fichier zip : \n\t\t{e}")
 
@@ -281,18 +300,28 @@ class MajPlugins:
         install_root = prefix.parent.parent
         osgeo_bat = install_root / "OSGeo4W.bat"
         if not osgeo_bat.exists():
-            text = f"Fichier introuvable : {osgeo_bat}\n"
+            log(f"Fichier batch introuvable : {osgeo_bat}")
+            text = f"Fichier batch introuvable : {osgeo_bat}\n"
             text += f"Impossible d'installer le package pefile"
             QMessageBox.critical(self.iface.mainWindow(),"Erreur",text)
             return
 
         texte = "L'installation va commencer, veuillez attendre le message de fin d'installation du package"
         QMessageBox.information(self.iface.mainWindow(), "Installation du package", texte)
-        subprocess.run([str(osgeo_bat), "python", "-m", "pip", "install", "pefile"],shell=True)
-        text = "Packages installés ! \nVeuillez redémarrer QGIS pour prendre en compte le package."
-        QMessageBox.information(self.iface.mainWindow(), "Installation du package", text)
 
-
+        plugin_dir = Path(os.path.dirname(__file__))
+        archive = Path(plugin_dir/"packages-requis"/PEFILE)
+        cmd = f'start "" cmd /c call "{osgeo_bat}" && pip install "{archive}" && exit'
+        result = subprocess.Popen(cmd, shell=True)
+        code = result.wait()
+        if code != 0:
+            log(f"L'installation du package a échoué")
+            QMessageBox.critical(self.iface.mainWindow(), "Erreur", f"L'installation du package a échoué (code {code})")
+        else:
+            log(f"Package installé")
+            text = ("Packages installés !"
+                    "\nVeuillez fermer manuellement le shell qui vient de s'ouvrir")
+            QMessageBox.information(self.iface.mainWindow(), "Succès", text)
 
 
 
