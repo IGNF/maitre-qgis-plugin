@@ -243,7 +243,7 @@ class PluginMaitre:
                     lien = line.strip().split("=")[1]
                     print(lien)
                     if lien ==  r"http://homepage":
-                        afficheerreur("Attention", f"La documentation du plugin {plugin} n'est pas renseignée")
+                        afficheerreur("Attention", f"La documentation du plugin {plugin} est absente.")
                         return None
                     return lien
             return None
