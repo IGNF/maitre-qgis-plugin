@@ -24,6 +24,7 @@
 
 import os.path
 import qgis
+import webbrowser
 
 from qgis.PyQt.QtWidgets import QInputDialog, QLabel,QAction,QListWidgetItem,QMenu
 from qgis.utils import plugins
@@ -79,7 +80,6 @@ def log(message,reset=False):
         f.write(f"{message}\n")
 
 def affiches_spec_bdtopo():
-    import webbrowser
     webbrowser.open("https://bdtopoexplorer.ign.fr/")
 
 def afficheerreur(titre,text):
@@ -177,21 +177,6 @@ class PluginMaitre:
         action.triggered.connect(self.run)
         self.menu.addAction(action)
 
-        # self.menu_config = QMenu("Configuration", self.iface.mainWindow())
-        # icon_path_scale = Path(os.path.dirname(__file__)) / "icons" / "scale.png"
-        # icon_path_config = Path(os.path.dirname(__file__)) / "icons" / "icon.png"
-        # self.menu_config.setIcon(QIcon(str(icon_path_config)))
-        # self.menu.addMenu(self.menu_config)
-        #
-        # confplugin = QAction(QIcon(str(icon_path_scale)), "Configuration plugins", self.iface.mainWindow())
-        # self.menu_config.addAction(confplugin)
-        # confplugin.triggered.connect(self.run)
-        #
-        # scalezoom = QAction(QIcon(str(icon_path_scale)),"Echelle de visibilité",self.iface.mainWindow())
-        # self.menu_config.addAction(scalezoom)
-        # scalezoom.triggered.connect(self.run)
-        # ************************************************************************
-
         # ************************************************************************
         # menu "Requêtes"
         self.menu_requete = QMenu("Requêtes", self.iface.mainWindow())
@@ -214,13 +199,20 @@ class PluginMaitre:
         # documentation bduni
         icon_path = Path(os.path.dirname(__file__), "icons", "spec.png")
         action = QAction(QIcon(str(icon_path)) ,"Documentation BDTopo",self.iface.mainWindow())
-
         action.triggered.connect(affiches_spec_bdtopo)
-
         self.menu.addAction(action)
         self.menu.addSeparator()
         # ************************************************************************
 
+        # ************************************************************************
+        # menu "Documentation plugins"
+        self.menu_doc_plugins = QMenu("Documentations des plugins ...", self.iface.mainWindow())
+        self.menu.addMenu(self.menu_doc_plugins)
+        for plugin in self.getlistplugin_ign():
+            doc_plugin = QAction(f"{plugin}", self.iface.mainWindow())
+            doc_plugin.triggered.connect(lambda *_, plugin1=plugin: self.on_affiche_doc_plugin(plugin1))
+            self.menu_doc_plugins.addAction(doc_plugin)
+        self.menu.addSeparator()
 
         # ************************************************************************
         # autre plugin
@@ -239,15 +231,27 @@ class PluginMaitre:
         action.triggered.connect(self.maj.execute_installeur)
         self.menu.addAction(action)
 
-        # *************************************************************************
-        # paramètres
-        # self.menu.addSeparator()
-        # action = QAction("Paramètres", self.iface.mainWindow())
-        # self.menu.addAction(action)
-
-
         menuBar = self.iface.mainWindow().menuBar()
         menuBar.insertMenu(self.iface.firstRightStandardMenu().menuAction(), self.menu)
+
+    def get_lien_doc_from_metadata(self, plugin):
+        plugins_dir = os.path.join(QgsApplication.qgisSettingsDirPath(),"python","plugins")
+        fic_metadata = os.path.join(plugins_dir, plugin, "metadata.txt")
+        with open(fic_metadata, "r", encoding="utf-8") as f:
+            for line in f:
+                if line.startswith("homepage="):
+                    lien = line.strip().split("=")[1]
+                    print(lien)
+                    if lien ==  r"http://homepage":
+                        afficheerreur("Attention", f"La documentation du plugin {plugin} n'est pas renseignée")
+                        return None
+                    return lien
+            return None
+
+    def on_affiche_doc_plugin(self,plugin):
+        lien_doc = self.get_lien_doc_from_metadata(plugin)
+        if lien_doc:
+            webbrowser.open(lien_doc)
 
     def on_requete(self):
         self.runplugin("IGN_requetes")
