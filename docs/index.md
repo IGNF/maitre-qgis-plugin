@@ -21,17 +21,17 @@ v1.6.0</strong></td>
 
 1. [Prérequis](#prérequis)
 
-[2 Résumé [1](#résumé)](#résumé)
+2. [Résumé](#résumé)
 
-[3 Installation [2](#installation)](#installation)
+3. [Installation](#installation)
 
-[4 Présentation [2](#présentation)](#présentation)
+4. [Présentation](#présentation)
 
-[4.1 Onglet menu IGN [2](#onglet-menu-ign)](#onglet-menu-ign)
+4.1 [Onglet menu IGN](#onglet-menu-ign)
 
-[4.2 Barres d’outils [3](#barres-doutils)](#barres-doutils)
+4.2 [Barres d’outils](#barres-doutils)](#barres-doutils)
 
-[4.3 Suivi des versions et documentation
+4.3 Suivi des versions et documentation
 [3](#suivi-des-versions-et-documentation)](#suivi-des-versions-et-documentation)
 
 # 
