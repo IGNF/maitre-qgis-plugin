@@ -29,10 +29,9 @@ v1.6.0</strong></td>
 
 4.1 [Onglet menu IGN](#onglet-menu-ign)
 
-4.2 [Barres d’outils](#barres-doutils)](#barres-doutils)
+4.2 [Barres d’outils](#barres-doutils)
 
-4.3 Suivi des versions et documentation
-[3](#suivi-des-versions-et-documentation)](#suivi-des-versions-et-documentation)
+4.3 [Suivi des versions et documentation](#suivi-des-versions-et-documentation)
 
 # 
 
