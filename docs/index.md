@@ -35,7 +35,7 @@ v1.6.0</strong></td>
 
 # 
 
-# Prérequis
+# 1. Prérequis
 
 Version de QGIS : version 3 supérieure à 3.28
 
