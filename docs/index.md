@@ -41,7 +41,7 @@ Version de QGIS : version 3 supérieure à 3.28
 
 Cette version est compatible QGIS 4
 
-# Résumé
+# 2. Résumé
 
 Le plugin Maitre crée un menu IGN dans la barre des menus.
 
@@ -51,7 +51,7 @@ BDTOPO©.
 Le plugin maitre permet d’organiser l’affichage des différents plugins
 IGN dans le menu et la barre d’outils.
 
-# Installation
+# 3. Installation
 
 Le plugin Maitre s’installe avec l’exécutable d’installation
 (\*\_PluginIGN_installer »
@@ -73,7 +73,7 @@ Si on choisit d’installer le package « pefile » il est primordial à la
 fin de l’installation de redémarrer QGIS pour que ce package soit prit
 en compte.
 
-# Présentation
+# 4. Présentation
 
 <img src="images/image3.png"
 style="width:3.60878in;height:2.91865in" />
@@ -81,14 +81,14 @@ style="width:3.60878in;height:2.91865in" />
 L’interface permet d’organiser l’affichage des plugins en les classant
 dans des onglets.
 
-## Onglet menu IGN
+## 4.1 Onglet menu IGN
 
 Par défaut l’onglet menu IGN affiche dans le menu IGN les plugins
 cochés.
 
 Les plugins proposés sont détectés automatiquement.
 
-## Barres d’outils
+## 4.2 Barres d’outils
 
 - Ajouter une barre d’outils <img src="images/image4.png"
   style="width:2.14613in;height:0.23962in" />
@@ -109,7 +109,7 @@ style="width:2.30554in;height:0.95074in" /></p></figcaption>
 
 > Pour changer le nom du groupe (routier pour l’exemple ci-dessus).
 
-##  Suivi des versions et documentation
+## 4.3 Suivi des versions et documentation
 
 > <img src="images/image8.png"
 > style="width:0.31254in;height:0.2292in" /> Affiche l’historique des
