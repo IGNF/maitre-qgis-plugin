@@ -16,6 +16,8 @@ about=Ce plugin centralise et organise les plugins IGN dans des menus et barres 
 
 tracker=https://github.com/IGNF/maitre-qgis-plugin/issues
 repository=https://github.com/IGNF/maitre-qgis-plugin
+homepage=https://ignf.github.io/maitre-qgis-plugin/
+
 # End of mandatory metadata
 
 # Recommended items:
@@ -27,7 +29,6 @@ changelog= Notification des dépendances manquantes
 # Tags are comma separated with spaces allowed
 tags=python
 
-homepage=https://github.com/IGNF/maitre-qgis-plugin
 #category=
 icon=icons/icon.png
 # experimental flag
