@@ -9,7 +9,7 @@
 style="width:1.38681in;height:1.47153in"
 alt="logo_IGN_pour_lettre" /></td>
 <td style="text-align: center;"><strong>Plugin Maitre
-v1.6.0</strong></td>
+v1.7.1</strong></td>
 </tr>
 <tr>
 <td style="text-align: center;"></td>
