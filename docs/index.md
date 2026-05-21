@@ -19,7 +19,7 @@ v1.6.0</strong></td>
 
 **Sommaire**
 
-[1 Prérequis [1](#prérequis)](#prérequis)
+1. [Prérequis](#prérequis)
 
 [2 Résumé [1](#résumé)](#résumé)
 
