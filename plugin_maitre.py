@@ -39,7 +39,8 @@ MENU_IGN = "menu IGN "
 PREFIXE_PLUGIN_IGN = "IGN_"
 DOSSIER_ONGLET = "config_plugin_maitre"
 # liste des plugins à exclure du menu et de la barre d'outils (ex : plugin sans interface)
-EXCEPT_PLUGIN = ["IGN_Vues"]
+# EXCEPT_PLUGIN = ["IGN_Vues"]
+EXCEPT_PLUGIN = [""]
 
 # 0 : bouton "actualiser/sauvegarder"
 # 1 : titre des barres d'outils
