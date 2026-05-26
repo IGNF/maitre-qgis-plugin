@@ -111,11 +111,7 @@ def affichemessageAvertissement( titre, text):
 
 
 def afficheDoc():
-    fichier = Path(os.path.dirname(__file__), "plugin_maitre.pdf")
-    if not os.path.isfile(fichier):
-        afficheerreur("Attention", "La documentation est introuvable")
-    else:
-        subprocess.Popen(['start', '', fichier], shell=True)
+    webbrowser.open("https://ignf.github.io/maitre-qgis-plugin/")
 
 class PluginMaitre:
     def __init__(self, iface):
