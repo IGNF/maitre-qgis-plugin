@@ -2,7 +2,7 @@
 
 # MAITRE
 
-Altibonne is a Python plugin that allows visualizing and correcting elevation profiles on linear features (max 2 contiguous) or surface features (max 1)
+"Maitre" is a plugin that manages the integration of plugins prefixed _IGN into a menu and/or toolbars.
 
 
 ## Fonctionnalités
