@@ -39,7 +39,8 @@ MENU_IGN = "menu IGN "
 PREFIXE_PLUGIN_IGN = "IGN_"
 DOSSIER_ONGLET = "config_plugin_maitre"
 # liste des plugins à exclure du menu et de la barre d'outils (ex : plugin sans interface)
-EXCEPT_PLUGIN = ["IGN_Vues"]
+# EXCEPT_PLUGIN = ["IGN_Vues"]
+EXCEPT_PLUGIN = [""]
 
 # 0 : bouton "actualiser/sauvegarder"
 # 1 : titre des barres d'outils
@@ -110,11 +111,7 @@ def affichemessageAvertissement( titre, text):
 
 
 def afficheDoc():
-    fichier = Path(os.path.dirname(__file__), "plugin_maitre.pdf")
-    if not os.path.isfile(fichier):
-        afficheerreur("Attention", "La documentation est introuvable")
-    else:
-        subprocess.Popen(['start', '', fichier], shell=True)
+    webbrowser.open("https://ignf.github.io/maitre-qgis-plugin/")
 
 class PluginMaitre:
     def __init__(self, iface):
