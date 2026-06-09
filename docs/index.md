@@ -89,7 +89,7 @@ cochés.
 
 Les plugins proposés sont détectés automatiquement.
 
-### <span style="color: white; background-color: #00ADC5; padding: 2px 5px;">4.2 Barre doutils</span> 
+### <span style="color: white; background-color: #00ADC5; padding: 2px 5px;">4.2 Barres d'outils</span> 
 
 - Ajouter une barre d’outils ![](images/image4.png)
 
