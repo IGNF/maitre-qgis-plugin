@@ -24,25 +24,25 @@ v1.7.1</strong></td>
 
 
 - [1. Prérequis](#1-prérequis)
-- [2. Résumé](#résumé)
-- [3. Installation](#installation)
-- [4. Présentation](#présentation)
-	- [[#Onglet menu IGN]]  
-	- [[#Barres d’outils]]
-	- [[#Suivi des versions et documentation]]
+- [2. Résumé](#2-résumé)
+- [3. Installation](#3-installation)
+- [4. Présentation](#4-présentation)
+	- [4.1 Onglet menu IGN](#41-onglet-menu-ign)
+	- [4.1 Barres d’outils](#42-Barres d’outils)
+	- [4.1 Suivi des versions et documentation](#43-Suivi des versions et documentation)
 
 
 
 
-<div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
-  <h2 id="1-prérequis" style="color: #00ADC5" >1. Prérequis</h2>
+<div  style="background-color: #00ADC5; border: 1px solid black; padding: 10px; text-align: justify;">
+  <h2 id="1-prérequis" style="color: white" >1. Prérequis</h2>
 </div>
 
 Version de QGIS : version 3 supérieure à 3.28
 Cette version est compatible QGIS 4
 
-<div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
-  <h2 id="1-Résumé" style="color: #00ADC5" >1. Résumé</h2>
+<div  style="background-color: #00ADC5; border: 1px solid black; padding: 10px; text-align: justify;">
+  <h2 id="2-Résumé" style="color: white" >2. Résumé</h2>
 </div>
 
 Le plugin Maitre crée un menu IGN dans la barre des menus.
@@ -50,8 +50,8 @@ Le plugin Maitre crée un menu IGN dans la barre des menus.
 Ce menu permet de configurer l'interface (intégration des différents plugins IGN dans les menus et / ou dans des barres d'outils, d'ouvrir les documentations des plugins IGN, de vérifier les mises à jour disponibles des plugins pris en compte
 
 
-<div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
-  <h2 id="1-Installation" style="color: #00ADC5" >1. Installation</h2>
+<div  style="background-color: #00ADC5; border: 1px solid black; padding: 10px; text-align: justify;">
+  <h2 id="3-Installation" style="color: white" >3. Installation</h2>
 </div>
 
 Le plugin Maitre s’installe avec l’exécutable d’installation
@@ -73,8 +73,8 @@ Si on choisit d’installer le package « pefile » il est primordial à la
 fin de l’installation de redémarrer QGIS pour que ce package soit prit
 en compte.
 
-<div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
-  <h2 id="1-Présentation" style="color: #00ADC5" >1. Présentation</h2>
+<div  style="background-color: #00ADC5; border: 1px solid black; padding: 10px; text-align: justify;">
+  <h2 id="4-Présentation" style="color: white" >4. Présentation</h2>
 </div>
 
 ![](images/image3.png)
@@ -82,18 +82,14 @@ en compte.
 L’interface permet d’organiser l’affichage des plugins en les classant
 dans des onglets.
 
-<div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
-  <h2 id="1-Onglet menu IGN" style="color: #00ADC5" >1. Onglet menu IGN</h2>
-</div>
+### <span style="color: white; background-color: #00ADC5; padding: 2px 5px;">4.1 Onglet menu IGN</span>  
 
 Par défaut l’onglet menu IGN affiche dans le menu IGN les plugins
 cochés.
 
 Les plugins proposés sont détectés automatiquement.
 
-<div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
-  <h2 id="1-Barre d'outils" style="color: #00ADC5" >1. Barre d'outils</h2>
-</div>
+### <span style="color: white; background-color: #00ADC5; padding: 2px 5px;">4.2 Barre d'outils</span> 
 
 - Ajouter une barre d’outils ![](images/image4.png)
 
@@ -112,9 +108,7 @@ style="width:2.30554in;height:0.95074in" /></p></figcaption>
 
 Pour changer le nom du groupe (routier pour l’exemple ci-dessus).
 
-<div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
-  <h2 id="1-Suivi des versions et documentation" style="color: #00ADC5" >1. Suivi des versions et documentation</h2>
-</div>
+### <span style="color: white; background-color: #00ADC5; padding: 2px 5px;">4.3 Suivi des versions et documentation</span> 
 
  <img src="images/image8.png"> Affiche l’historique des versions la documentation de l’outil.
 
