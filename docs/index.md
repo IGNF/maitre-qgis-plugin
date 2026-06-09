@@ -28,7 +28,7 @@ v1.7.2</strong></td>
 - [3. Installation](#3-installation)
 - [4. Présentation](#4-présentation)
 	- [4.1 Onglet menu IGN](#41-onglet-menu-ign)
-	- [4.2 Barres d’outils](#42-Barres-doutils)
+	- [4.2 Barres d’outils](#42-barres-doutils)
 	- [4.3 Suivi des versions et documentation](#43-suivi-des-versions-et-documentation)
 
 
