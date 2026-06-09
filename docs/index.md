@@ -8,7 +8,7 @@
 <td rowspan="2"><img src="images/image1.jpeg"
 style="width:1.38681in;height:1.47153in"
 alt="logo_IGN_pour_lettre" /></td>
-<td style="text-align: center;"><strong>Plugin Maitre
+<td style="text-align: center;font-size: 24px;"><strong>Plugin Maitre
 v1.7.2</strong></td>
 </tr>
 <tr>
