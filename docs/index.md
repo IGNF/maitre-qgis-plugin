@@ -34,8 +34,8 @@ v1.7.2</strong></td>
 
 
 
-<div  style="background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;">
-  <h2 id="1-prérequis" style="color: white" >1. Prérequis</h2>
+<div  style="background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
+  <h2 id="1-prérequis" style="color: white;margin:0;" >1. Prérequis</h2>
 </div>
 
 Version de QGIS : version 3 supérieure à 3.28
@@ -50,8 +50,8 @@ Le plugin Maitre crée un menu IGN dans la barre des menus.
 Ce menu permet de configurer l'interface (intégration des différents plugins IGN dans les menus et / ou dans des barres d'outils, d'ouvrir les documentations des plugins IGN, de vérifier les mises à jour disponibles des plugins pris en compte
 
 
-<div  style="background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;">
-  <h2 id="3-installation" style="color: white" >3. Installation</h2>
+<div  style="background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
+  <h2 id="3-installation" style="color: white;margin:0;" >3. Installation</h2>
 </div>
 
 Le plugin Maitre s’installe avec l’exécutable d’installation
@@ -73,8 +73,8 @@ Si on choisit d’installer le package « pefile » il est primordial à la
 fin de l’installation de redémarrer QGIS pour que ce package soit prit
 en compte.
 
-<div  style="background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;">
-  <h2 id="4-présentation" style="color: white" >4. Présentation</h2>
+<div  style="background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
+  <h2 id="4-présentation" style="color: white;margin:0;" >4. Présentation</h2>
 </div>
 
 ![](images/image3.png)
