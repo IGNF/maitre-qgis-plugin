@@ -28,8 +28,8 @@ v1.7.1</strong></td>
 - [3. Installation](#3-installation)
 - [4. Présentation](#4-présentation)
 	- [4.1 Onglet menu IGN](#41-onglet-menu-ign)
-	- [4.1 Barres d’outils](#42-Barres d’outils)
-	- [4.1 Suivi des versions et documentation](#43-Suivi des versions et documentation)
+	- [4.2 Barres d’outils](#42-Barres-d-outils)
+	- [4.3 Suivi des versions et documentation](#43-suivi-des-versions-et-documentation)
 
 
 
@@ -42,7 +42,7 @@ Version de QGIS : version 3 supérieure à 3.28
 Cette version est compatible QGIS 4
 
 <div  style="background-color: #00ADC5; border: 1px solid black; padding: 10px; text-align: justify;">
-  <h2 id="2-Résumé" style="color: white" >2. Résumé</h2>
+  <h2 id="2-résumé" style="color: white" >2. Résumé</h2>
 </div>
 
 Le plugin Maitre crée un menu IGN dans la barre des menus.
@@ -51,7 +51,7 @@ Ce menu permet de configurer l'interface (intégration des différents plugins I
 
 
 <div  style="background-color: #00ADC5; border: 1px solid black; padding: 10px; text-align: justify;">
-  <h2 id="3-Installation" style="color: white" >3. Installation</h2>
+  <h2 id="3-installation" style="color: white" >3. Installation</h2>
 </div>
 
 Le plugin Maitre s’installe avec l’exécutable d’installation
