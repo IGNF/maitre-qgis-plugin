@@ -9,7 +9,7 @@
 style="width:1.38681in;height:1.47153in"
 alt="logo_IGN_pour_lettre" /></td>
 <td style="text-align: center;"><strong>Plugin Maitre
-v1.7.1</strong></td>
+v1.7.2</strong></td>
 </tr>
 <tr>
 <td style="text-align: center;"></td>
@@ -74,7 +74,7 @@ fin de l’installation de redémarrer QGIS pour que ce package soit prit
 en compte.
 
 <div  style="background-color: #00ADC5; border: 1px solid black; padding: 10px; text-align: justify;">
-  <h2 id="4-Présentation" style="color: white" >4. Présentation</h2>
+  <h2 id="4-présentation" style="color: white" >4. Présentation</h2>
 </div>
 
 ![](images/image3.png)
@@ -89,7 +89,7 @@ cochés.
 
 Les plugins proposés sont détectés automatiquement.
 
-### <span style="color: white; background-color: #00ADC5; padding: 2px 5px;">4.2 Barre d'outils</span> 
+### <span style="color: white; background-color: #00ADC5; padding: 2px 5px;">4.2 Barre doutils</span> 
 
 - Ajouter une barre d’outils ![](images/image4.png)
 
