@@ -12,37 +12,39 @@ alt="logo_IGN_pour_lettre" /></td>
 v1.7.2</strong></td>
 </tr>
 <tr>
-<td style="text-align: center;"></td>
+<td style="font-size: 16px;text-align: center;">Développeur  : Gérôme PECHEUR (IGN)</td>
 </tr>
 </tbody>
 </table>
   
 
-<div  style="background-color: white; border: 1px solid black; padding: 10px; text-align: justify;">
-  <h2 style="color: #00ADC5">Sommaire</h2>
-</div>
+## Sommaire
 
 
-- [1. Prérequis](#1-prérequis)
-- [2. Résumé](#2-résumé)
-- [3. Installation](#3-installation)
-- [4. Présentation](#4-présentation)
-	- [4.1 Onglet menu IGN](#41-onglet-menu-ign)
-	- [4.2 Barres d’outils](#42-barres-doutils)
-	- [4.3 Suivi des versions et documentation](#43-suivi-des-versions-et-documentation)
+
+- [1. Prérequis](#prerequis)
+- [2. Résumé](#resume)
+- [3. Installation](#installation)
+- [4. Présentation](#presentation)
+	- [4.1 Onglet menu IGN](#onglet-menu-ign)
+	- [4.2 Barres d’outils](#barres-doutils)
+	- [4.3 Suivi des versions et documentation](#suivi-des-versions-et-documentation)
 
 
 
 
 <div  style="background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
-  <h2 id="1-prérequis" style="color: white;margin:0;" >1. Prérequis</h2>
+  <h2 id="prerequis" style="color: white;margin:0;" >1. Prérequis</h2>
 </div>
 
 Version de QGIS : version 3 supérieure à 3.28
 Cette version est compatible QGIS 4
 
+Le plugin « maitre » doit préalablement être installé : 
+[maitre-qgis-plugin sur GitHub](https://github.com/IGNF/maitre-qgis-plugin)
+
 <div  style="background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
-  <h2 id="2-résumé" style="color: white;margin:0;" >2. Résumé</h2>
+  <h2 id="resume" style="color: white;margin:0;" >2. Résumé</h2>
 </div>
 
 Le plugin Maitre crée un menu IGN dans la barre des menus.
@@ -51,7 +53,7 @@ Ce menu permet de configurer l'interface (intégration des différents plugins I
 
 
 <div  style="background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
-  <h2 id="3-installation" style="color: white;margin:0;" >3. Installation</h2>
+  <h2 id="installation" style="color: white;margin:0;" >3. Installation</h2>
 </div>
 
 Le plugin Maitre s’installe avec l’exécutable d’installation
@@ -74,7 +76,7 @@ fin de l’installation de redémarrer QGIS pour que ce package soit prit
 en compte.
 
 <div  style="background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
-  <h2 id="4-présentation" style="color: white;margin:0;" >4. Présentation</h2>
+  <h2 id="présentation" style="color: white;margin:0;" >4. Présentation</h2>
 </div>
 
 ![](images/image3.png)
@@ -82,14 +84,18 @@ en compte.
 L’interface permet d’organiser l’affichage des plugins en les classant
 dans des onglets.
 
-### <span style="color: white; background-color: #00ADC5; padding: 2px 5px;">4.1 Onglet menu IGN</span>  
+<div  style="font-size: 10px;background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
+  <h2 id="onglet-menu-ign" style="color: white;margin:0;" >4.1 Onglet menu IGN</h2>
+</div>
 
 Par défaut l’onglet menu IGN affiche dans le menu IGN les plugins
 cochés.
 
 Les plugins proposés sont détectés automatiquement.
 
-### <span style="color: white; background-color: #00ADC5; padding: 2px 5px;">4.2 Barres d'outils</span> 
+<div  style="font-size: 10px;background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
+  <h2 id="barres-doutils" style="color: white;margin:0;" >4.2 Barres d'outils</h2>
+</div>
 
 - Ajouter une barre d’outils ![](images/image4.png)
 
@@ -108,8 +114,10 @@ style="width:2.30554in;height:0.95074in" /></p></figcaption>
 
 Pour changer le nom du groupe (routier pour l’exemple ci-dessus).
 
-### <span style="color: white; background-color: #00ADC5; padding: 2px 5px;">4.3 Suivi des versions et documentation</span> 
+<div  style="font-size: 10px;background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
+  <h2 id="suivi-des-versions-et-documentation" style="color: white;margin:0;" >4.3 Suivi des versions et documentation</h2>
+</div>
 
- <img src="images/image8.png"> Affiche l’historique des versions la documentation de l’outil.
+<img src="images/image8.png"> Affiche l’historique des versions la documentation de l’outil.
 
  ![](images/image9.png) 
