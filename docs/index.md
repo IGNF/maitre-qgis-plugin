@@ -26,9 +26,7 @@ v1.7.2</strong></td>
 - [2. Résumé](#resume)
 - [3. Installation](#installation)
 - [4. Présentation](#presentation)
-	- [4.1 Onglet menu IGN](#onglet-menu-ign)
-	- [4.2 Barres d’outils](#barres-doutils)
-	- [4.3 Suivi des versions et documentation](#suivi-des-versions-et-documentation)
+- [5 Suivi des versions et documentation](#suivi-des-versions-et-documentation)
 
 
 
@@ -40,8 +38,7 @@ v1.7.2</strong></td>
 Version de QGIS : version 3 supérieure à 3.28
 Cette version est compatible QGIS 4
 
-Le plugin « maitre » doit préalablement être installé : 
-[maitre-qgis-plugin sur GitHub](https://github.com/IGNF/maitre-qgis-plugin)
+
 
 <div  style="background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
   <h2 id="resume" style="color: white;margin:0;" >2. Résumé</h2>
@@ -79,45 +76,36 @@ en compte.
   <h2 id="présentation" style="color: white;margin:0;" >4. Présentation</h2>
 </div>
 
+==Lors de l’ouverture d’un projet QGIS, le plugin maître détecte automatiquement si des mises à jour sont disponibles pour les plugins IGN.==
+
+Ce plugin ajoute un menu IGN dans la barre des menus de QGIS.   
+![](images/image10.png)
+ 
+- Configuration : Permet de configurer l’interface (intégration des différents plugins IGN dans les menus et / ou dans des barres d’outils).
 ![](images/image3.png)
 
-L’interface permet d’organiser l’affichage des plugins en les classant
-dans des onglets.
+Ici il est possible de choisir les plugins à intégrer dans le menu IGN et / ou dans des barres d’outils.
+Les plugins préfixés "IGN_" sont détectés automatiquement.  
+Le premier onglet concerne le menu IGN. Il n’est pas possible de le renommer, car il s’agit du menu par défaut.  
+Les autres onglets sont des barres d'outils, Il est possible de les renommer et d’en ajouter autant que nécessaire.
 
-<div  style="font-size: 10px;background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
-  <h2 id="onglet-menu-ign" style="color: white;margin:0;" >4.1 Onglet menu IGN</h2>
+- Requête : non fonctionnel pour l’instant
+- Documentation BDTopo : adffiche la documentation de la BDTopo (https://bdtopoexplorer.ign.fr/)
+- Documentation des plugins : affiche la documentation de tous les plugins IGN disponibles dans l'installation.
+- La liste des plugins IGN ajoutés dans le menu
+- Vérifier les mises à jour des plugins : affiche les mises à jour disponibles pour les plugins IGN pris en charge par le plugin maître.    
+L’installateur de mises à jour se lance. Si plusieurs versions de QGIS (par exemple QGIS 3 et QGIS 4) coexistent sur votre poste, il vous demande pour quelle version de QGIS effectuer la mise à jour.    
+Il vous demande ensuite dans quel profil installer les mises à jour.  
+==Important : choisissez le profil actif, c’est-à-dire celui actuellement utilisé par QGIS.==    
+La documentation de l'installateur est disponible ici : https://ignf.github.io/installateur-qgis/
+
+
+<div  style="background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
+  <h2 id="suivi-des-versions-et-documentation" style="color: white;margin:0;" >5 Suivi des versions et documentation</h2>
 </div>
 
-Par défaut l’onglet menu IGN affiche dans le menu IGN les plugins
-cochés.
 
-Les plugins proposés sont détectés automatiquement.
-
-<div  style="font-size: 10px;background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
-  <h2 id="barres-doutils" style="color: white;margin:0;" >4.2 Barres d'outils</h2>
-</div>
-
-- Ajouter une barre d’outils ![](images/image4.png)
-
-Choisir un nom et cliquer sur Ajouter crée un nouvel onglet. Les
-plugins cochés dans cet onglet s’ajouteront dans un groupe dans la
-barre d’outils QGIS.
-
-<figure>
-<img src="images/image6.png"
-style="width:1.97177in;height:2.52493in" />
-<figcaption aria-hidden="true"><p><img src="images/image5.png"
-style="width:2.30554in;height:0.95074in" /></p></figcaption>
-</figure>
-
-- Renommer la barre d’outils ![](images/image7.png)
-
-Pour changer le nom du groupe (routier pour l’exemple ci-dessus).
-
-<div  style="font-size: 10px;background-color: #00ADC5; border: 1px solid black; padding: 5px; text-align: justify;margin-bottom:10px;">
-  <h2 id="suivi-des-versions-et-documentation" style="color: white;margin:0;" >4.3 Suivi des versions et documentation</h2>
-</div>
-
-<img src="images/image8.png"> Affiche l’historique des versions la documentation de l’outil.
+<img src="images/image8.png"> Affiche l’historique des versions la documentation de l’outil.  
+Exemple : 
 
  ![](images/image9.png) 
