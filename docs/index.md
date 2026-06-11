@@ -81,7 +81,7 @@ en compte.
 Ce plugin ajoute un menu IGN dans la barre des menus de QGIS.   
 ![](images/image10.png)
  
-- Configuration : Permet de configurer l’interface (intégration des différents plugins IGN dans les menus et / ou dans des barres d’outils).
+- Configuration : Permet de configurer l’interface (intégration des différents plugins IGN dans les menus et / ou dans des barres d’outils).  
 ![](images/image3.png)
 
 Ici il est possible de choisir les plugins à intégrer dans le menu IGN et / ou dans des barres d’outils.
